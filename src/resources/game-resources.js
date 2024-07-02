@@ -1,0 +1,190 @@
+import {resourceModifiers} from "./resource-modifiers";
+import {resourceCalculators} from "./resource-calculators";
+import {SMALL_NUMBER} from "../utils/consts";
+
+class GameResources {
+
+    constructor() {
+        this.resources = {};
+        this.resourcesByTags = {};
+        GameResources.instance = this;
+    }
+
+    registerResource(id, resource) {
+        if(resource.resourceModifier) {
+            const modif = {...resource.resourceModifier};
+            if(!modif.id) {
+                modif.id = `resource_${id}`
+            }
+            modif.name = resource.name;
+            resource.modifier = resourceModifiers.registerModifier(modif);
+        }
+        this.resources[id] = resource;
+        if(!this.resources[id].amount) {
+            this.resources[id].amount = 0;
+        }
+        if(!this.resources[id].defaultCap) {
+            this.resources[id].defaultCap = 0;
+        }
+        if(!this.resources[id].targetEfficiency) {
+            this.resources[id].targetEfficiency = 1;
+        }
+        if(resource.tags) {
+            resource.tags.forEach(tag => {
+                if(!this.resourcesByTags[tag]) {
+                    this.resourcesByTags[tag] = [];
+                }
+                this.resourcesByTags[tag].push(id);
+            })
+        }
+    }
+
+    getResource(id) {
+        const rs = this.resources[id];
+        if(!rs) {
+            throw new Error(`Try to add undefined resource: ${id}`);
+        }
+        return rs;
+    }
+
+    assertToCapOrEmpty(id) {
+        const rs = this.getResource(id);
+        if(rs.balance > 0) {
+            return (rs.cap - rs.amount) / rs.balance;
+        } else {
+            return (rs.amount / rs.balance)
+        }
+    }
+
+    listResourcesByTags(tags, isOr = false, excludeIds = []) {
+        let suitableIds = []
+        if(isOr) {
+            suitableIds = tags.reduce((acc, tag) => [...acc, ...(this.resourcesByTags[tag] || [])], []);
+        } else {
+            suitableIds = [...(this.resourcesByTags[tags[0]] || [])];
+            for(let i = 1; i < tags.length; i++) {
+                suitableIds = suitableIds.filter(st => (this.resourcesByTags[tags[i]] || []).find(st))
+            }
+        }
+        if(excludeIds && excludeIds.length) {
+            suitableIds = suitableIds.filter(id => !excludeIds.includes(id))
+        }
+        return suitableIds.map(id => ({
+            id,
+            ...this.resources[id],
+            isUnlocked: !this.resources[id].unlockCondition || this.resources[id].unlockCondition()
+        }));
+    }
+
+    assertBalance(id) {
+        const rs = this.getResource(id);
+        rs.balance = rs.income*rs.multiplier - rs.consumption;
+        return rs.balance;
+    }
+
+    assertCap(id) {
+        const rs = this.getResource(id);
+        rs.cap = (rs.rawCap + rs.defaultCap)*rs.capMult;
+        return rs.cap;
+    }
+
+    addResource(id, amount) {
+        const rs = this.getResource(id);
+        if(rs.unlockCondition && !rs.unlockCondition()) return ;
+        const amtToAdd = rs.hasCap ? Math.min(amount, rs.cap - (rs.amount || 0) ) : amount;
+        rs.amount += amtToAdd;
+        if(rs.amount < 0) {
+            rs.amount = 0;
+        }
+        if(rs.modifier && amtToAdd !== 0) {
+            rs.modifier.level = rs.amount;
+            resourceCalculators.regenerateModifier(rs.modifier.id);
+            console.log('rs.mod', rs.modifier);
+        }
+        if(amtToAdd > SMALL_NUMBER*rs.consumption && rs.targetEfficiency < 1) {
+            console.log('resetEff: ', rs, amtToAdd);
+            resourceCalculators.resetConsumingEfficiency(id);
+        }
+        if(amtToAdd) {
+            resourceModifiers.modifiersGroupped.byResourceDeps[id]?.forEach(modifierId => {
+                resourceModifiers.cacheModifier(modifierId);
+                resourceCalculators.regenerateModifier(modifierId)
+            })
+        }
+        return rs.amount;
+    }
+
+    setResource(id, amount) {
+        const rs = this.getResource(id);
+        const pAmount = rs.amount;
+        rs.amount = amount;
+        if(rs.amount < 0) {
+            rs.amount = 0;
+        }
+        if(rs.modifier && amount > 0) {
+            rs.modifier.level = rs.amount;
+            resourceCalculators.regenerateModifier(rs.modifier.id);
+            console.log('rs.mod', rs.modifier);
+        }
+        if(pAmount !== rs.amount) {
+            resourceModifiers.modifiersGroupped.byResourceDeps[id]?.forEach(modifierId => {
+                resourceModifiers.cacheModifier(modifierId);
+                resourceCalculators.regenerateModifier(modifierId)
+            })
+        }
+        return rs.amount;
+    }
+
+    setResourceRawIncome(id, income) {
+        const rs = this.getResource(id);
+        rs.income = income;
+        this.assertBalance(id);
+    }
+
+    setResourceRawConsumption(id, consumption) {
+        const rs = this.getResource(id);
+        rs.consumption = consumption;
+        this.assertBalance(id);
+    }
+
+    setResourceMultiplier(id, multiplier) {
+        const rs = this.getResource(id);
+        rs.multiplier = multiplier;
+        this.assertBalance(id);
+    }
+
+    setResourceRawCap(id, cap) {
+        const rs = this.getResource(id);
+        rs.rawCap = cap;
+        this.assertCap(id);
+    }
+
+    setResourceCapMult(id, capMult) {
+        const rs = this.getResource(id);
+        rs.capMult = capMult;
+        this.assertCap(id);
+    }
+
+    setBreakdown(id, breakDown) {
+        const rs = this.getResource(id);
+        rs.breakDown = breakDown;
+    }
+
+    save() {
+        const obj = {};
+        for(const rsId in this.resources) {
+            obj[rsId] = this.resources[rsId].amount;
+        }
+        return obj;
+    }
+
+    load(obj) {
+        for(const rsId in obj) {
+            this.setResource(rsId, obj[rsId]);
+        }
+        return obj;
+    }
+
+}
+
+export const gameResources = GameResources.instance || new GameResources();
