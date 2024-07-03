@@ -74,6 +74,11 @@ class GameEffects {
         this.assertCap(id);
     }
 
+    setBreakDown(id, breakDown) {
+        const rs = this.getEffect(id);
+        rs.breakDown = mult;
+    }
+
 }
 
 export const gameEffects = GameEffects.instance || new GameEffects();

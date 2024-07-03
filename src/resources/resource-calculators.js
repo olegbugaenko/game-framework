@@ -123,6 +123,12 @@ class ResourceCalculators {
         if(id === 'workersEfficiency') {
             console.log('byRes: ', byRes);
         }
+        let isSaveTree = gameEffects.getEffect(id).saveBalanceTree;
+        const modifiersBreakdown = {
+            income: [],
+            multiplier: [],
+            consumption: []
+        };
         resourceModifiers.modifiersGroupped.byEffect[id].income?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if (rmod.level === 0) {
@@ -134,7 +140,15 @@ class ResourceCalculators {
             if (rmod.income?.effects?.[id]) {
                 const inc = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency);
                 if(inc != null && inc > SMALL_NUMBER) {
-                    income += Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency);
+                    const amt = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency);
+                    income += amt;
+                    if(isSaveTree) {
+                        modifiersBreakdown.income.push({
+                            id: mod,
+                            name: rmod.name,
+                            value: amt
+                        })
+                    }
                 }
             }
         });
@@ -147,7 +161,15 @@ class ResourceCalculators {
                 return;
             }
             if (rmod.multiplier?.effects?.[id]) {
-                multiplier *= Formulas.calculateValue(rmod.multiplier?.effects?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.multiplier?.effects?.[id], rmod.level * rmod.efficiency);
+                multiplier *= amt;
+                if(isSaveTree) {
+                    modifiersBreakdown.multiplier.push({
+                        id: mod,
+                        name: rmod.name,
+                        value: amt
+                    })
+                }
             }
         });
         resourceModifiers.modifiersGroupped.byEffect[id].consumption?.forEach(mod => {
@@ -159,7 +181,15 @@ class ResourceCalculators {
                 return;
             }
             if (rmod.consumption?.effects?.[id]) {
-                consumption += Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level * rmod.efficiency);
+                consumption += amt;
+                if(isSaveTree) {
+                    modifiersBreakdown.consumption.push({
+                        id: mod,
+                        name: rmod.name,
+                        value: amt
+                    })
+                }
             }
         });
         resourceModifiers.modifiersGroupped.byEffect[id].rawCap?.forEach(mod => {
@@ -192,6 +222,9 @@ class ResourceCalculators {
         gameEffects.setEffectRawConsumption(id, consumption);
         gameEffects.setEffectRawCap(id, rawCap);
         gameEffects.setEffectCapMult(id, capMult);
+        if(isSaveTree) {
+            gameEffects.setBreakDown(id, modifiersBreakdown);
+        }
         const currValue = gameEffects.getEffectValue(id);
         if(prevValue !== currValue) {
             console.log(`Effect ${id} changed from ${prevValue} -> ${currValue}`, resourceModifiers.modifiersGroupped.byDeps);
@@ -323,7 +356,7 @@ class ResourceCalculators {
                 affordabilities[resourceId].eta = gameResources.getResource(resourceId).balance > SMALL_NUMBER ? (prices[resourceId] - gameResources.getResource(resourceId).amount) / gameResources.getResource(resourceId).balance : 1.e+20;
                 affordabilities[resourceId].percentage = gameResources.getResource(resourceId).amount / prices[resourceId];
                 isAffordable = false;
-                if(prices[resourceId] > gameResources.getResource(resourceId).cap) {
+                if(gameResources.getResource(resourceId).hasCap && prices[resourceId] > gameResources.getResource(resourceId).cap) {
                     affordabilities[resourceId].hardLocked = true;
                     affordabilities[resourceId].eta = 1.e+20;
                     hardLocked = true;

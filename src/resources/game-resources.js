@@ -91,6 +91,7 @@ class GameResources {
     addResource(id, amount) {
         const rs = this.getResource(id);
         if(rs.unlockCondition && !rs.unlockCondition()) return ;
+        if(rs.isService) return ;
         const amtToAdd = rs.hasCap ? Math.min(amount, rs.cap - (rs.amount || 0) ) : amount;
         rs.amount += amtToAdd;
         if(rs.amount < 0) {
@@ -127,6 +128,10 @@ class GameResources {
             console.log('rs.mod', rs.modifier);
         }
         if(pAmount !== rs.amount) {
+            if(rs.isService && rs.targetEfficiency < 1) {
+                console.log('resetEffService: ', rs, amount);
+                resourceCalculators.resetConsumingEfficiency(id);
+            }
             resourceModifiers.modifiersGroupped.byResourceDeps[id]?.forEach(modifierId => {
                 resourceModifiers.cacheModifier(modifierId);
                 resourceCalculators.regenerateModifier(modifierId)

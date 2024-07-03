@@ -23,6 +23,15 @@ class ResourcesManager {
             isAssertsFinished = true;
             for(const resourceId in gameResources.resources) {
                 if(gameResources.resources[resourceId].balance) {
+                    if(gameResources.resources[resourceId].isService && gameResources.resources[resourceId].balance < -SMALL_NUMBER) {
+                        // we are missing service resource
+                        const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
+                        resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
+                        gameResources.resources[resourceId].isMissing = true;
+                        gameResources.resources[resourceId].amount = 0;
+                        gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                        isAssertsFinished = false;
+                    } else
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
                         console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance);
                         // now we should retain list of stuff consuming
@@ -40,7 +49,12 @@ class ResourcesManager {
         // console.log('FINISH_ITER: ', end - start, resourceModifiers.getModifier('entity_supply_pottery').efficiency, resourceModifiers.getModifier('entity_supply_clothes').efficiency);
 
         for(const resourceId in gameResources.resources) {
-            gameResources.addResource(resourceId, gameResources.resources[resourceId].balance*dT);
+            if(gameResources.resources[resourceId].isService) {
+                gameResources.setResource(resourceId, gameResources.resources[resourceId].balance);
+            } else {
+                gameResources.addResource(resourceId, gameResources.resources[resourceId].balance*dT);
+            }
+
         }
     }
 
