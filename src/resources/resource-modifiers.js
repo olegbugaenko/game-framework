@@ -11,9 +11,11 @@ export class ResourceModifiers {
         ResourceModifiers.instance = this;
     }
 
-    registerModifier(modifier) {
-        if(modifier.groupId) {
-            modifier = this.modifiers[modifier.groupedId] ?? modifier;
+    registerModifier(modifier, entityRefId = null) {
+        if(modifier.groupId && entityRefId) {
+            modifier = this.modifiers[modifier.groupId] ?? modifier;
+            console.log('(modifier.entityRefs || [])', modifier, this.modifiers);
+            modifier.entityRefs ? modifier.entityRefs.push(entityRefId) : modifier.entityRefs = [entityRefId];
         }
         if(modifier.level == null) {
             modifier.level = 0

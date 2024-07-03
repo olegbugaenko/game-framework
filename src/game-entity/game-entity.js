@@ -32,11 +32,14 @@ class GameEntity {
             if(!modif.id) {
                 modif.id = `entity_${id}`
             }
+            if(entity.modifierGroupId) {
+                modif.groupId = entity.modifierGroupId;
+            }
             if(modif.groupId) {
                 entity.modifierGroupId = modif.groupId;
                 modif.id = modif.groupId;
             }
-            entity.modifier = resourceModifiers.registerModifier(modif);
+            entity.modifier = resourceModifiers.registerModifier(modif, id);
         }
         this.entities[id] = entity;
         if(entity.tags && entity.tags.length) {
@@ -55,7 +58,17 @@ class GameEntity {
         if(!this.entities[id]) return;
 
         if(this.entities[id].modifier) {
-            resourceCalculators.unsetModifier(this.entities[id].modifier.id);
+            if(this.entities[id].modifierGroupId) {
+                this.entities[id].modifier.entityRefs = this.entities[id].modifier.entityRefs.filter(eId => eId !== id);
+                // reassertModifierLevel
+                const lvl = this.reassertModifierLevel(this.entities[id].modifier);
+                resourceCalculators.updateModifierLevel(this.entities[id].modifier.id, lvl);
+                console.warn('NEWLV: ', this.entities[id].modifier.id, lvl, this.entities[id].modifier.entityRefs);
+            }
+            if(!this.entities[id].modifier.entityRefs?.length) {
+                resourceCalculators.unsetModifier(this.entities[id].modifier.id);
+            }
+
         }
 
         delete this.entities[id];
@@ -126,6 +139,19 @@ class GameEntity {
         return null;
     }
 
+    getEntityMaxLevel(id) {
+        const current = this.getEntity(id);
+        let max;
+        if(current.getMaxLevel) {
+            max = current.getMaxLevel();
+        } else
+        if(current.maxLevel || current.maxLevel === 0) {
+            max = current.maxLevel;
+        }
+
+       return max;
+    }
+
     getEntityCapped(id, addLvl = 0) {
         const current = this.getEntity(id);
         let max;
@@ -143,6 +169,13 @@ class GameEntity {
         }
 
         return false;
+    }
+
+    reassertModifierLevel(modifier) {
+        if(!modifier.entityRefs?.length) {
+            return modifier.level;
+        }
+        return modifier.entityRefs.reduce((acc, id) => acc + this.getLevel(id), 0);
     }
 
     levelUpEntity(id) {
@@ -219,7 +252,11 @@ class GameEntity {
         }
 
         if(current.modifier?.id) {
-            resourceCalculators.updateModifierLevel(current.modifier.id, level);
+            let levelToSet = level;
+            if(current.modifier.entityRefs) {
+                levelToSet = this.reassertModifierLevel(current.modifier) + level - current.level;
+            }
+            resourceCalculators.updateModifierLevel(current.modifier.id, levelToSet);
         }
         const pLev = current.level;
         current.level = level;
