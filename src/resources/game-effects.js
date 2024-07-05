@@ -76,7 +76,12 @@ class GameEffects {
 
     setBreakDown(id, breakDown) {
         const rs = this.getEffect(id);
-        rs.breakDown = mult;
+        rs.breakDown = breakDown;
+    }
+
+    getBreakdown(id) {
+        const rs = this.getEffect(id);
+        return rs.breakDown || {};
     }
 
 }
