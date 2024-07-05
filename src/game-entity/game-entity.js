@@ -337,12 +337,6 @@ class GameEntity {
             ...unpack(modif, 'effects', 'multiplier')
         )
         result.push(
-            ...unpack(modif, 'resources', 'consumption')
-        )
-        result.push(
-            ...unpack(modif, 'effects', 'consumption')
-        )
-        result.push(
             ...unpack(modif, 'resources', 'rawCap')
         )
         result.push(
@@ -353,6 +347,12 @@ class GameEntity {
         )
         result.push(
             ...unpack(modif, 'effects', 'capMult')
+        )
+        result.push(
+            ...unpack(modif, 'resources', 'consumption')
+        )
+        result.push(
+            ...unpack(modif, 'effects', 'consumption')
         )
         return result;
     }
