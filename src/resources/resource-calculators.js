@@ -110,26 +110,20 @@ class ResourceCalculators {
         // console.log(`asserted[${id}]: `, gameResources.resources[id]);
     }
 
-    assertEffect(id) {
-        // now we walking through all the modifiers
-        let income = 0;
-        let multiplier = 1;
-        let consumption = 0;
-        let rawCap = 0;
-        let capMult = 1;
-        let effectIncome = 0;
-        let effectMultiplier = 1;
+    getEffectBreakdowns(id) {
         const byRes = resourceModifiers.modifiersGroupped.byEffect[id];
         if(id === 'workersEfficiency') {
             console.log('byRes: ', byRes);
         }
-        let isSaveTree = gameEffects.getEffect(id).saveBalanceTree;
         const modifiersBreakdown = {
             income: [],
             multiplier: [],
-            consumption: []
+            consumption: [],
+            rawCap: [],
+            capMult: [],
+            modifiers: 0,
         };
-        resourceModifiers.modifiersGroupped.byEffect[id].income?.forEach(mod => {
+        resourceModifiers.modifiersGroupped.byEffect[id]?.income?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if (rmod.level === 0) {
                 return;
@@ -141,18 +135,17 @@ class ResourceCalculators {
                 const inc = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency);
                 if(inc != null && inc > SMALL_NUMBER) {
                     const amt = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency);
-                    income += amt;
-                    if(isSaveTree) {
-                        modifiersBreakdown.income.push({
-                            id: mod,
-                            name: rmod.name,
-                            value: amt
-                        })
-                    }
+
+                    modifiersBreakdown.income.push({
+                        id: mod,
+                        name: rmod.name,
+                        value: amt
+                    })
+                    modifiersBreakdown.modifiers++;
                 }
             }
         });
-        resourceModifiers.modifiersGroupped.byEffect[id].multiplier?.forEach(mod => {
+        resourceModifiers.modifiersGroupped.byEffect[id]?.multiplier?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if (rmod.level === 0) {
                 return;
@@ -162,17 +155,16 @@ class ResourceCalculators {
             }
             if (rmod.multiplier?.effects?.[id]) {
                 const amt = Formulas.calculateValue(rmod.multiplier?.effects?.[id], rmod.level * rmod.efficiency);
-                multiplier *= amt;
-                if(isSaveTree) {
-                    modifiersBreakdown.multiplier.push({
-                        id: mod,
-                        name: rmod.name,
-                        value: amt
-                    })
-                }
+
+                modifiersBreakdown.multiplier.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
             }
         });
-        resourceModifiers.modifiersGroupped.byEffect[id].consumption?.forEach(mod => {
+        resourceModifiers.modifiersGroupped.byEffect[id]?.consumption?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if (rmod.level === 0) {
                 return;
@@ -182,17 +174,16 @@ class ResourceCalculators {
             }
             if (rmod.consumption?.effects?.[id]) {
                 const amt = Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level * rmod.efficiency);
-                consumption += amt;
-                if(isSaveTree) {
-                    modifiersBreakdown.consumption.push({
-                        id: mod,
-                        name: rmod.name,
-                        value: amt
-                    })
-                }
+                modifiersBreakdown.consumption.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
+
             }
         });
-        resourceModifiers.modifiersGroupped.byEffect[id].rawCap?.forEach(mod => {
+        resourceModifiers.modifiersGroupped.byEffect[id]?.rawCap?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if (rmod.level === 0) {
                 return;
@@ -201,10 +192,16 @@ class ResourceCalculators {
                 return;
             }
             if (rmod.rawCap?.effects?.[id]) {
-                rawCap += Formulas.calculateValue(rmod.rawCap?.effects?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.rawCap?.effects?.[id], rmod.level * rmod.efficiency);
+                modifiersBreakdown.rawCap.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
             }
         });
-        resourceModifiers.modifiersGroupped.byEffect[id].capMult?.forEach(mod => {
+        resourceModifiers.modifiersGroupped.byEffect[id]?.capMult?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if (rmod.level === 0) {
                 return;
@@ -212,10 +209,43 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+
             if(rmod.capMult?.effects?.[id]) {
-                capMult *= Formulas.calculateValue(rmod.capMult?.effects?.[id], rmod.level*rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.capMult?.effects?.[id], rmod.level*rmod.efficiency);
+                modifiersBreakdown.capMult.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
             }
         });
+
+        return modifiersBreakdown;
+    }
+
+    assertEffect(id) {
+        // now we walking through all the modifiers
+        let income = 0;
+        let multiplier = 1;
+        let consumption = 0;
+        let rawCap = 0;
+        let capMult = 1;
+
+        const byRes = resourceModifiers.modifiersGroupped.byEffect[id];
+        if(id === 'workersEfficiency') {
+            console.log('byRes: ', byRes);
+        }
+        const modifiersBreakdown = this.getEffectBreakdowns(id);
+        let isSaveTree = gameEffects.getEffect(id).saveBalanceTree;
+
+        income = modifiersBreakdown.income?.reduce((acc, item) => acc + item.value, income);
+        consumption = modifiersBreakdown.consumption?.reduce((acc, item) => acc + item.value, consumption);
+        multiplier = modifiersBreakdown.multiplier?.reduce((acc, item) => acc * item.value, multiplier);
+        rawCap = modifiersBreakdown.rawCap?.reduce((acc, item) => acc + item.value, rawCap);
+        capMult = modifiersBreakdown.capMult?.reduce((acc, item) => acc * item.value, capMult);
+
+
         const prevValue = gameEffects.getEffectValue(id);
         gameEffects.setEffectRawIncome(id, income);
         gameEffects.setEffectMultiplier(id, multiplier);

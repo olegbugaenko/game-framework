@@ -281,6 +281,27 @@ class GameEntity {
         }
     }
 
+    getDependanciesBreakdown(id, exludeArr = []) {
+
+        const entity = this.getEntity(id);
+        if(!entity.modifier) return;
+        const deps = entity.modifier.effectDeps;
+
+        if(!deps.length) return;
+
+        const depsToAssert = deps.filter(dep => !exludeArr.includes(dep));
+
+        if(!depsToAssert.length) return;
+
+        return depsToAssert.map(dep => {
+
+            return {
+                effect: gameEffects.getEffect(dep),
+                breakDown: resourceCalculators.getEffectBreakdowns(dep)
+            }
+        })
+    }
+
     getEffects(id, addLvl = 0, lvl = null) {
 
         const result = [];
@@ -325,7 +346,7 @@ class GameEntity {
         }
         const modif = entity.modifier;
         result.push(
-            ...unpack(modif, 'resources', 'income', id.includes('building'))
+            ...unpack(modif, 'resources', 'income')
         )
         result.push(
             ...unpack(modif, 'effects', 'income')
