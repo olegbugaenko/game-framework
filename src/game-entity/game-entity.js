@@ -123,7 +123,7 @@ class GameEntity {
         return this.entities[id];
     }
 
-    getLevelupCost(id) {
+    getLevelupCost(id, addLvl = 0) {
         const current = this.getEntity(id);
         if(current.get_cost) {
             current.cost = current.get_cost();
@@ -131,7 +131,7 @@ class GameEntity {
         if(current.cost) {
             const totalCost = {};
             for(const rsId in current.cost) {
-                const costs = Formulas.calculateValue(current.cost[rsId], current.level);
+                const costs = Formulas.calculateValue(current.cost[rsId], current.level + addLvl);
                 totalCost[rsId] = costs;
             }
             return totalCost;
@@ -270,8 +270,8 @@ class GameEntity {
         return this.getEntity(id).level;
     }
 
-    getAffordable(id) {
-        const costs = this.getLevelupCost(id);
+    getAffordable(id, addLvl = 0) {
+        const costs = this.getLevelupCost(id, addLvl);
         if(costs) {
             const affordable = resourceCalculators.isAffordable(costs);
             return affordable;
