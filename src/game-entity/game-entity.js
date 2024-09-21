@@ -391,7 +391,30 @@ class GameEntity {
                 value
             }));
         }
-        return {};
+        return Object.entries(entity.attributes).map(([name, value]) => ({
+            name,
+            value
+        }));
+    }
+
+    setAttribute(id, attributeId, value) {
+        const entity = this.getEntity(id);
+
+        if(!entity.attributes) {
+            entity.attributes = {};
+        }
+
+        entity.attributes[attributeId] = value;
+    }
+
+    getAttribute(id, attributeId, defaultValue) {
+        const entity = this.getEntity(id);
+
+        if(!entity.attributes) {
+            entity.attributes = {};
+        }
+
+        return entity.attributes[attributeId] || defaultValue;
     }
 
     getAttributesObject(id) {
@@ -399,7 +422,7 @@ class GameEntity {
         if(entity.get_attributes) {
             return entity.get_attributes();
         }
-        return {};
+        return entity.attributes || {};
     }
 
 }
