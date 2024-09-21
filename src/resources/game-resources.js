@@ -115,7 +115,7 @@ class GameResources {
         return rs.amount;
     }
 
-    setResource(id, amount) {
+    setResource(id, amount, bPreventReset = false) {
         const rs = this.getResource(id);
         const pAmount = rs.amount;
         rs.amount = amount;
@@ -128,7 +128,7 @@ class GameResources {
             console.log('rs.mod', rs.modifier);
         }
         if(pAmount !== rs.amount) {
-            if(rs.isService && rs.targetEfficiency < 1) {
+            if(rs.isService && rs.targetEfficiency < 1 && !bPreventReset) {
                 console.log('resetEffService: ', rs, amount);
                 resourceCalculators.resetConsumingEfficiency(id);
             }
@@ -136,6 +136,11 @@ class GameResources {
                 resourceModifiers.cacheModifier(modifierId);
                 resourceCalculators.regenerateModifier(modifierId)
             })
+            if(rs.modifier) {
+                rs.modifier.level = rs.amount;
+                resourceCalculators.regenerateModifier(rs.modifier.id);
+                console.log('rs.mod.setResource', rs.modifier);
+            }
         }
         return rs.amount;
     }

@@ -270,6 +270,11 @@ class GameEntity {
         return this.getEntity(id).level;
     }
 
+    getGroupLevel(id) {
+        const modiff = resourceModifiers.getModifier(id);
+        return this.reassertModifierLevel(modiff);
+    }
+
     getAffordable(id, addLvl = 0) {
         const costs = this.getLevelupCost(id, addLvl);
         if(costs) {

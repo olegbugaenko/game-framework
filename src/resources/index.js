@@ -50,12 +50,20 @@ class ResourcesManager {
 
         for(const resourceId in gameResources.resources) {
             if(gameResources.resources[resourceId].isService) {
-                gameResources.setResource(resourceId, gameResources.resources[resourceId].balance);
+                gameResources.setResource(resourceId, gameResources.resources[resourceId].balance, true);
             } else {
                 gameResources.addResource(resourceId, gameResources.resources[resourceId].balance*dT);
             }
 
         }
+    }
+
+    reassertAll() {
+        for(const modifierId in resourceModifiers.modifiers) {
+            resourceModifiers.cacheModifier(modifierId);
+            resourceCalculators.regenerateModifier(modifierId)
+        }
+
     }
 
 }
