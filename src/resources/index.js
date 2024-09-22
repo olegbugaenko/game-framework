@@ -33,9 +33,9 @@ class ResourcesManager {
                         isAssertsFinished = false;
                     } else
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
-                        console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance);
                         // now we should retain list of stuff consuming
                         const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
+                        console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, effPercentage);
                         resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
                         gameResources.resources[resourceId].isMissing = true;
                         gameResources.resources[resourceId].amount = 0;

@@ -3,6 +3,7 @@ class GameEffects {
     constructor() {
         GameEffects.instance = this;
         this.effects = {};
+        this.effectsByTags = {};
     }
 
     registerEffect(id, effect) {
@@ -12,13 +13,27 @@ class GameEffects {
         if(!effect.defaultCap) {
             effect.defaultCap = 0;
         }
-        effect.value = effect.defaultValue;
+        effect.value = effect.defaultValue ?? 0;
         effect.income = effect.income ?? 0;
         effect.multiplier = effect.multiplier ?? 1;
         effect.consumption = effect.consumption ?? 0;
         effect.rawCap = effect.rawCap ?? 0;
         effect.capMult = effect.capMult ?? 0;
+        effect.tags = effect.tags ?? [];
         this.effects[id] = effect;
+
+        if(effect.minValue !== null) {
+            effect.value = Math.max(effect.value, effect.minValue);
+        }
+
+        if(effect.tags) {
+            effect.tags.forEach(tag => {
+                if(!this.effectsByTags[tag]) {
+                    this.effectsByTags[tag] = [];
+                }
+                this.effectsByTags[tag].push(id);
+            })
+        }
     }
 
     getEffect(id) {
@@ -35,6 +50,9 @@ class GameEffects {
     assertValue(id) {
         const rs = this.getEffect(id);
         rs.value = Math.min((rs.income + rs.defaultValue)*rs.multiplier - rs.consumption, rs.hasCap ? rs.cap : 1.e+308);
+        if(rs.minValue !== null) {
+            rs.value = Math.max(rs.minValue, rs.value);
+        }
         return rs.value;
     }
 
@@ -82,6 +100,26 @@ class GameEffects {
     getBreakdown(id) {
         const rs = this.getEffect(id);
         return rs.breakDown || {};
+    }
+
+    listEffectsByTags(tags, isOr = false, excludeIds = []) {
+        let suitableIds = []
+        if(isOr) {
+            suitableIds = tags.reduce((acc, tag) => [...acc, ...(this.effectsByTags[tag] || [])], []);
+        } else {
+            suitableIds = [...(this.effectsByTags[tags[0]] || [])];
+            for(let i = 1; i < tags.length; i++) {
+                suitableIds = suitableIds.filter(st => (this.effectsByTags[tags[i]] || []).find(st))
+            }
+        }
+        if(excludeIds && excludeIds.length) {
+            suitableIds = suitableIds.filter(id => !excludeIds.includes(id))
+        }
+        return suitableIds.map(id => ({
+            id,
+            ...this.effects[id],
+            isUnlocked: !this.effects[id].unlockCondition || this.effects[id].unlockCondition()
+        }));
     }
 
 }

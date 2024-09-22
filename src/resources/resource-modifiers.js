@@ -26,7 +26,11 @@ export class ResourceModifiers {
         modifier.efficiency = modifier.efficiency || 1;
         this.modifiers[modifier.id] = modifier;
 
-        return this.cacheModifier(modifier.id);
+        const result = this.cacheModifier(modifier.id);
+
+        console.log('Modiff: ', this.modifiers, this.modifiersGroupped);
+
+        return result;
 
     }
 
@@ -84,7 +88,7 @@ export class ResourceModifiers {
             modifier[effectKey] = modifier[`get_${effectKey}`]();
         }
 
-        if(modifier[effectKey].resources) {
+        if(modifier[effectKey].resources && modifier.allowedImpacts.includes('resources')) {
             for(const key in modifier[effectKey].resources) {
                 if(!this.modifiersGroupped.byResource[key]) {
                     this.modifiersGroupped.byResource[key] = {
@@ -99,7 +103,7 @@ export class ResourceModifiers {
                 }
             }
         }
-        if(modifier[effectKey].effects) {
+        if(modifier[effectKey].effects && modifier.allowedImpacts.includes('effects')) {
             for(const key in modifier[effectKey].effects) {
                 if(!this.modifiersGroupped.byEffect[key]) {
                     this.modifiersGroupped.byEffect[key] = {

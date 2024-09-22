@@ -34,9 +34,9 @@ class ResourceCalculators {
                 return;
             }
             if (rmod.income?.resources?.[id]) {
-                const amt = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level);
                 if(amt != null && Math.abs(amt) > SMALL_NUMBER) {
-                    income += amt;
+                    income += amt * rmod.efficiency;
                     modifiersBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
@@ -70,8 +70,8 @@ class ResourceCalculators {
                 return;
             }
             if (rmod.consumption?.resources?.[id]) {
-                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level * rmod.efficiency);
-                consumption += amt;
+                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level);
+                consumption += amt * rmod.efficiency;
                 if(amt > SMALL_NUMBER) {
                     modifiersBreakdown.consumption.push({
                         id: mod,
@@ -88,7 +88,7 @@ class ResourceCalculators {
                 return;
             }
             if (rmod.rawCap?.resources?.[id]) {
-                rawCap += Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level * rmod.efficiency);
+                rawCap += Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency;
             }
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.capMult?.forEach(mod => {
@@ -335,11 +335,11 @@ class ResourceCalculators {
 
     toggleConsumingEfficiency(resourceId, efficiency, bReset = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
-
+        console.log('Consuming: ', resourceModifiers.modifiersGroupped.byResource);
         if(consuming && consuming.length) {
             consuming.forEach(consumerId => {
                 const consumer = resourceModifiers.getModifier(consumerId);
-                if(resourceId === 'pottery' || resourceId === 'clothes') {
+                if(resourceId === 'energy' || resourceId === 'coins') {
                     console.log(`${resourceId} consumption/production toggled. Reassert: `, efficiency, consumer, consumer.nIter);
                 }
                 if(bReset) {
@@ -350,6 +350,8 @@ class ResourceCalculators {
                     return;
                 }
                 this.updateModifierEfficiency(consumer.id, consumer.efficiency * efficiency);
+
+                // console.log('AfterUpd: ', JSON.stringify(resourceModifiers.modifiers));
             })
         }
     }

@@ -15,9 +15,14 @@ class GameEntity {
     }
 
     registerGameEntity(id, entity) {
+        if(this.entities[id]) {
+            this.unsetEntity(id);
+        }
         if(entity.copyFromId) {
             entity = {
                 ...this.entities[entity.copyFromId],
+                allowedImpacts: [],
+                isAbstract: false,
                 ...entity,
             }
         }
@@ -26,9 +31,12 @@ class GameEntity {
             entity.level = 0;
         }
         entity.id = id;
-        if(entity.resourceModifier) {
+        if(entity.resourceModifier && !entity.isAbstract) {
+            if(!entity.allowedImpacts || !entity.allowedImpacts.length) {
+                entity.allowedImpacts = ['resources', 'effects'];
+            }
             // register resource modifier
-            const modif = {...entity.resourceModifier, level: entity.level, name: entity.name};
+            const modif = {...entity.resourceModifier, level: entity.level, name: entity.name, allowedImpacts: entity.allowedImpacts};
             if(!modif.id) {
                 modif.id = `entity_${id}`
             }
@@ -51,6 +59,7 @@ class GameEntity {
             })
         }
 
+        console.log('Active modifiers: ', resourceModifiers.modifiers, resourceModifiers.modifiersGroupped);
         return this.entities[id];
     }
 
@@ -78,6 +87,10 @@ class GameEntity {
         }
     }
 
+    getEntityEfficiency(id) {
+        return this.getEntity(id).modifier ? resourceModifiers.modifiers[this.getEntity(id).modifier.id].efficiency : 1
+    }
+
     listEntitiesByTags(tags, isOr = false, excludeIds = []) {
         let suitableIds = []
         if(isOr) {
@@ -94,7 +107,8 @@ class GameEntity {
         return suitableIds.map(id => ({
             ...this.getEntity(id),
             isUnlocked: !this.getEntity(id).unlockCondition || this.getEntity(id).unlockCondition(),
-            isCapped: (this.getEntity(id).maxLevel || (this.getEntity(id).getMaxLevel ? this.getEntity(id).getMaxLevel() : 1.e+308)) <= this.entities[id].level
+            isCapped: this.isCapped(id),
+            efficiency: this.getEntityEfficiency(id)
         }));
     }
 
@@ -120,7 +134,12 @@ class GameEntity {
         if(!this.entities[id]) {
             throw new Error(`Not found entity ${id}`);
         }
+
         return this.entities[id];
+    }
+
+    isCapped(id) {
+        return (this.getEntity(id).maxLevel || (this.getEntity(id).getMaxLevel ? this.getEntity(id).getMaxLevel() : 1.e+308)) <= this.entities[id].level
     }
 
     getLevelupCost(id, addLvl = 0) {
@@ -307,7 +326,7 @@ class GameEntity {
         })
     }
 
-    getEffects(id, addLvl = 0, lvl = null) {
+    getEffects(id, addLvl = 0, lvl = null, calculateForAbstract = false) {
 
         const result = [];
         const entity = this.entities[id];
@@ -346,10 +365,16 @@ class GameEntity {
             return results;
         }
 
-        if(!entity.modifier) {
+        let modif = entity.modifier;
+
+        if(entity.isAbstract && calculateForAbstract) {
+            modif = entity.resourceModifier;
+        }
+
+        if(!modif) {
             return result;
         }
-        const modif = entity.modifier;
+
         result.push(
             ...unpack(modif, 'resources', 'income')
         )
