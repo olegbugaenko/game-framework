@@ -2,6 +2,7 @@ import { gameResources } from "./game-resources";
 import { resourceModifiers } from "./resource-modifiers";
 import { resourceCalculators } from "./resource-calculators";
 import { gameEffects } from "./game-effects";
+import { resourceApi } from  "./resource-api";
 import {SMALL_NUMBER} from "../utils/consts";
 
 class ResourcesManager {
@@ -75,5 +76,6 @@ export {
     resourceModifiers,
     resourceCalculators,
     resourcesManager,
+    resourceApi,
     gameEffects,
 }

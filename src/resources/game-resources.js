@@ -20,6 +20,7 @@ class GameResources {
             resource.modifier = resourceModifiers.registerModifier(modif);
         }
         this.resources[id] = resource;
+        this.resources[id].id = id;
         if(!this.resources[id].amount) {
             this.resources[id].amount = 0;
         }

@@ -28,7 +28,7 @@ export class ResourceModifiers {
 
         const result = this.cacheModifier(modifier.id);
 
-        console.log('Modiff: ', this.modifiers, this.modifiersGroupped);
+        // console.log('Modiff: ', this.modifiers, this.modifiersGroupped);
 
         return result;
 
@@ -199,6 +199,10 @@ export class ResourceModifiers {
         if(modif.capMult) {
             dependantResources.push(...Object.keys(modif.capMult.resources || []))
             dependantEffects.push(...Object.keys(modif.capMult.effects || []))
+        }
+
+        if(modif.reourcesToReassert) {
+            dependantResources.push(...modif.reourcesToReassert);
         }
 
         return {

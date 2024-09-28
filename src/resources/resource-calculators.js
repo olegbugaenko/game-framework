@@ -374,12 +374,14 @@ class ResourceCalculators {
         let eta = 0;
         let percentage = 1;
         let hardLocked = false;
+        let max = 1e+200;
         for(const resourceId in prices) {
             affordabilities[resourceId] = {
                 resourceId,
                 name: gameResources.getResource(resourceId).name,
                 requirement: prices[resourceId],
                 actual: gameResources.getResource(resourceId).amount,
+                max: prices[resourceId] > SMALL_NUMBER ? Math.floor(gameResources.getResource(resourceId).amount / prices[resourceId]) : 1e+200,
             }
             if(gameResources.getResource(resourceId).amount >= prices[resourceId] || prices[resourceId] <= 0) {
                 affordabilities[resourceId].isAffordable = true;
@@ -396,6 +398,7 @@ class ResourceCalculators {
                 eta = Math.max(eta, affordabilities[resourceId].eta);
                 percentage = Math.min(percentage, affordabilities[resourceId].percentage);
             }
+            max = Math.min(max, affordabilities[resourceId].max);
         }
         return {
             isAffordable,
@@ -403,6 +406,7 @@ class ResourceCalculators {
             eta,
             percentage,
             affordabilities,
+            max
         }
     }
 }

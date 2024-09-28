@@ -59,7 +59,7 @@ class GameEntity {
             })
         }
 
-        console.log('Active modifiers: ', resourceModifiers.modifiers, resourceModifiers.modifiersGroupped);
+        // console.log('Active modifiers: ', resourceModifiers.modifiers, resourceModifiers.modifiersGroupped);
         return this.entities[id];
     }
 
@@ -106,10 +106,14 @@ class GameEntity {
         }
         return suitableIds.map(id => ({
             ...this.getEntity(id),
-            isUnlocked: !this.getEntity(id).unlockCondition || this.getEntity(id).unlockCondition(),
+            isUnlocked: this.isEntityUnlocked(id),
             isCapped: this.isCapped(id),
             efficiency: this.getEntityEfficiency(id)
         }));
+    }
+
+    isEntityUnlocked(id) {
+        return !this.getEntity(id).unlockCondition || this.getEntity(id).unlockCondition();
     }
 
     countEntitiesByTags(tags, isOr = false, excludeIds = []) {
@@ -326,7 +330,7 @@ class GameEntity {
         })
     }
 
-    getEffects(id, addLvl = 0, lvl = null, calculateForAbstract = false) {
+    getEffects(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1) {
 
         const result = [];
         const entity = this.entities[id];
@@ -351,7 +355,7 @@ class GameEntity {
                 const item = {
                     id: key,
                     name: basic_name,
-                    value: Formulas.calculateValue(formula, lvl + addLvl),
+                    value: Formulas.calculateValue(formula, lvl + addLvl)*customMultiplier,
                     scope
                 };
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
