@@ -31,12 +31,17 @@ class GameEntity {
             entity.level = 0;
         }
         entity.id = id;
+        if(!entity.allowedImpacts || !entity.allowedImpacts.length) {
+            entity.allowedImpacts = ['resources', 'effects'];
+        }
         if(entity.resourceModifier && !entity.isAbstract) {
-            if(!entity.allowedImpacts || !entity.allowedImpacts.length) {
-                entity.allowedImpacts = ['resources', 'effects'];
-            }
+
             // register resource modifier
             const modif = {...entity.resourceModifier, level: entity.level, name: entity.name, allowedImpacts: entity.allowedImpacts};
+
+            if(!modif.allowedImpacts) {
+                console.error('Not allowed empty modifiers', entity);
+            }
             if(!modif.id) {
                 modif.id = `entity_${id}`
             }
@@ -140,6 +145,10 @@ class GameEntity {
         }
 
         return this.entities[id];
+    }
+
+    entityExists(id) {
+        return (id in this.entities);
     }
 
     isCapped(id) {
@@ -361,7 +370,7 @@ class GameEntity {
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
                     continue;
                 }
-                if((key === 'multiplier' || key === 'capMult') && (Math.abs(item.value - 1) < SMALL_NUMBER)) {
+                if((scope === 'multiplier' || scope === 'capMult') && (Math.abs(item.value - 1) < SMALL_NUMBER)) {
                     continue;
                 }
                 results.push(item);

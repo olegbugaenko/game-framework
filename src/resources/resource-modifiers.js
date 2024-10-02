@@ -167,6 +167,7 @@ export class ResourceModifiers {
         if(modifier.effectMult) {
             this.unpackModifier(modifier, 'effectMult');
         }*/
+
         return modifier;
     }
 

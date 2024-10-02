@@ -66,6 +66,9 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.consumption?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
+            if(id === 'mana') {
+                console.log('Consuming: ', id, mod, rmod);
+            }
             if (rmod.efficiency === 0) {
                 return;
             }

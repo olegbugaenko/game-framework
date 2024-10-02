@@ -1,1 +1,1 @@
-export const SMALL_NUMBER = 1.e-15;
+export const SMALL_NUMBER = 1.e-8;

@@ -11,7 +11,7 @@ class GameResources {
     }
 
     registerResource(id, resource) {
-        if(resource.resourceModifier) {
+        if(resource.resourceModifier && !resource.isAbstract) {
             const modif = {...resource.resourceModifier};
             if(!modif.id) {
                 modif.id = `resource_${id}`
