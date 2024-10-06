@@ -93,9 +93,6 @@ class GameEntity {
     }
 
     getEntityEfficiency(id) {
-        if(id === 'runningAction') {
-            console.log('EntEEF: ', id, this.getEntity(id).modifier, resourceModifiers.modifiers[this.getEntity(id).modifier?.id]);
-        }
         return this.getEntity(id).modifier ? this.getEntity(id).modifier.efficiency : 1
     }
 
