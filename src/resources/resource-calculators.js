@@ -338,13 +338,13 @@ class ResourceCalculators {
 
     toggleConsumingEfficiency(resourceId, efficiency, bReset = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
-        console.log('Consuming: ', resourceModifiers.modifiersGroupped.byResource);
+        // console.log('Consuming: ', resourceModifiers.modifiersGroupped.byResource);
         if(consuming && consuming.length) {
             consuming.forEach(consumerId => {
                 const consumer = resourceModifiers.getModifier(consumerId);
-                if(resourceId === 'energy' || resourceId === 'coins') {
+                /*if(resourceId === 'energy' || resourceId === 'coins') {
                     console.log(`${resourceId} consumption/production toggled. Reassert: `, efficiency, consumer, consumer.nIter);
-                }
+                }*/
                 if(bReset) {
                     consumer.nIter = 0;
                 }
@@ -353,18 +353,30 @@ class ResourceCalculators {
                     return;
                 }
                 this.updateModifierEfficiency(consumer.id, consumer.efficiency * efficiency);
+                if(efficiency < 0) {
+                    consumer.bottleNeck = resourceId;
+                }
 
-                // console.log('AfterUpd: ', JSON.stringify(resourceModifiers.modifiers));
+                /*if(consumerId === 'entity_runningAction') {
+                    console.log('AfterUpd EntEEF: ', JSON.stringify(resourceModifiers.getModifier(consumerId)), efficiency);
+                }*/
             })
         }
     }
 
-    resetConsumingEfficiency(resourceId) {
+    resetConsumingEfficiency(resourceId, bCheckBottleneck = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
         if(consuming && consuming.length) {
             consuming.forEach(consumerId => {
                 const consumer = resourceModifiers.getModifier(consumerId);
-                this.updateModifierEfficiency(consumer.id, 1);
+                if(!bCheckBottleneck) {
+                    this.updateModifierEfficiency(consumer.id, 1);
+                } else {
+                    if(consumer.bottleNeck === resourceId) {
+                        this.updateModifierEfficiency(consumer.id,1);
+                    }
+                }
+
             })
         }
         gameResources.getResource(resourceId).isMissing = false;

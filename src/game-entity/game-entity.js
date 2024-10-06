@@ -93,7 +93,10 @@ class GameEntity {
     }
 
     getEntityEfficiency(id) {
-        return this.getEntity(id).modifier ? resourceModifiers.modifiers[this.getEntity(id).modifier.id].efficiency : 1
+        if(id === 'runningAction') {
+            console.log('EntEEF: ', id, this.getEntity(id).modifier, resourceModifiers.modifiers[this.getEntity(id).modifier?.id]);
+        }
+        return this.getEntity(id).modifier ? this.getEntity(id).modifier.efficiency : 1
     }
 
     listEntitiesByTags(tags, isOr = false, excludeIds = []) {
@@ -339,7 +342,7 @@ class GameEntity {
         })
     }
 
-    getEffects(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1) {
+    getEffects(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1, customEfficiency = 1) {
 
         const result = [];
         const entity = this.entities[id];
@@ -361,11 +364,18 @@ class GameEntity {
                     }
                 }
                 const basic_name = efft.name;
+                let lvlToCalc = lvl + addLvl;
+                if(scope === 'multiplier' || scope === 'capMult') {
+                    lvlToCalc *= customEfficiency;
+                } else {
+                    customMultiplier *= customEfficiency;
+                }
                 const item = {
                     id: key,
                     name: basic_name,
-                    value: Formulas.calculateValue(formula, lvl + addLvl)*customMultiplier,
-                    scope
+                    value: Formulas.calculateValue(formula, lvlToCalc)*customMultiplier,
+                    scope,
+                    type
                 };
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
                     continue;

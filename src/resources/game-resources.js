@@ -104,8 +104,8 @@ class GameResources {
             console.log('rs.mod', rs.modifier);
         }
         if(amtToAdd > SMALL_NUMBER*rs.consumption && rs.targetEfficiency < 1) {
-            console.log('resetEff: ', rs, amtToAdd);
-            resourceCalculators.resetConsumingEfficiency(id);
+            // console.log('EntEEF resetEff: ', rs, amtToAdd, rs.consumption);
+            resourceCalculators.resetConsumingEfficiency(id, true);
         }
         if(amtToAdd) {
             resourceModifiers.modifiersGroupped.byResourceDeps[id]?.forEach(modifierId => {
