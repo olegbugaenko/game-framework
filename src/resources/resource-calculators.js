@@ -233,6 +233,7 @@ class ResourceCalculators {
                 consumption,
                 rawCap,
                 capMult,
+                balance: income*multiplier - consumption,
                 modifiersBreakdown
             }
         }
