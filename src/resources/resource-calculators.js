@@ -9,7 +9,119 @@ class ResourceCalculators {
         ResourceCalculators.instance = this;
     }
 
-    assertResource(id, doLog = false) {
+
+    getResourceBreakdowns(id) {
+        const byRes = resourceModifiers.modifiersGroupped.byResource[id];
+
+        const modifiersBreakdown = {
+            income: [],
+            multiplier: [],
+            consumption: [],
+            rawCap: [],
+            capMult: [],
+            modifiers: 0,
+        };
+        byRes?.income?.forEach(mod => {
+            const rmod = resourceModifiers.getModifier(mod);
+            if (rmod.level === 0) {
+                return;
+            }
+            if (rmod.efficiency === 0) {
+                return;
+            }
+            if (rmod.income?.effects?.[id]) {
+                const inc = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level) * rmod.efficiency;
+                if(inc != null && inc > SMALL_NUMBER) {
+
+                    modifiersBreakdown.income.push({
+                        id: mod,
+                        name: rmod.name,
+                        value: inc
+                    })
+                    modifiersBreakdown.modifiers++;
+                }
+            }
+        });
+        byRes?.multiplier?.forEach(mod => {
+            const rmod = resourceModifiers.getModifier(mod);
+            if (rmod.level === 0) {
+                return;
+            }
+            if (rmod.efficiency === 0) {
+                return;
+            }
+            if (rmod.multiplier?.resources?.[id]) {
+                const amt = Formulas.calculateValue(rmod.multiplier?.resources?.[id], rmod.level * rmod.efficiency);
+
+                modifiersBreakdown.multiplier.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
+            }
+        });
+        byRes?.consumption?.forEach(mod => {
+            const rmod = resourceModifiers.getModifier(mod);
+            if (rmod.level === 0) {
+                return;
+            }
+            if (rmod.efficiency === 0) {
+                return;
+            }
+            if (rmod.consumption?.effects?.[id]) {
+                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * rmod.efficiency;
+                modifiersBreakdown.consumption.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
+
+            }
+        });
+        byRes?.rawCap?.forEach(mod => {
+            const rmod = resourceModifiers.getModifier(mod);
+            if (rmod.level === 0) {
+                return;
+            }
+            if (rmod.efficiency === 0) {
+                return;
+            }
+            if (rmod.rawCap?.effects?.[id]) {
+                const amt = Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency;
+                modifiersBreakdown.rawCap.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
+            }
+        });
+        byRes?.capMult?.forEach(mod => {
+            const rmod = resourceModifiers.getModifier(mod);
+            if (rmod.level === 0) {
+                return;
+            }
+            if (rmod.efficiency === 0) {
+                return;
+            }
+
+            if(rmod.capMult?.effects?.[id]) {
+                const amt = Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency);
+                modifiersBreakdown.capMult.push({
+                    id: mod,
+                    name: rmod.name,
+                    value: amt
+                })
+                modifiersBreakdown.modifiers++;
+            }
+        });
+
+        return modifiersBreakdown;
+    }
+
+    assertResource(id, doUpdate = true, skipByTags = []) {
         // now we walking through all the modifiers
         let income = 0;
         let multiplier = 1;
@@ -18,9 +130,7 @@ class ResourceCalculators {
         let capMult = 1;
         let effectIncome = 0;
         let effectMultiplier = 1;
-        if(doLog) {
-            console.log(`mdf[${id}]: `, resourceModifiers.modifiersGroupped.byResource[id]);
-        }
+
         const modifiersBreakdown = {
             income: [],
             multiplier: [],
@@ -30,6 +140,9 @@ class ResourceCalculators {
         const byRes = resourceModifiers.modifiersGroupped.byResource[id];
         resourceModifiers.modifiersGroupped.byResource[id]?.income?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
+            if(skipByTags.includes(tag => rmod.tags.some(rtag => rtag === tag))) {
+                return;
+            }
             if (rmod.efficiency === 0) {
                 return;
             }
@@ -40,7 +153,7 @@ class ResourceCalculators {
                     modifiersBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt
+                        value: amt * rmod.efficiency
                     })
                 }
 
@@ -48,6 +161,9 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.multiplier?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
+            if(skipByTags.includes(tag => rmod.tags.some(rtag => rtag === tag))) {
+                return;
+            }
             if (rmod.efficiency === 0) {
                 return;
             }
@@ -66,8 +182,8 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.consumption?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
-            if(id === 'mana') {
-                console.log('Consuming: ', id, mod, rmod);
+            if(skipByTags.includes(tag => rmod.tags.some(rtag => rtag === tag))) {
+                return;
             }
             if (rmod.efficiency === 0) {
                 return;
@@ -79,7 +195,7 @@ class ResourceCalculators {
                     modifiersBreakdown.consumption.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt
+                        value: amt * rmod.efficiency
                     })
                 }
 
@@ -87,6 +203,9 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.rawCap?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
+            if(skipByTags.includes(tag => rmod.tags.some(rtag => rtag === tag))) {
+                return;
+            }
             if (rmod.efficiency === 0) {
                 return;
             }
@@ -96,6 +215,9 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.capMult?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
+            if(skipByTags.includes(tag => rmod.tags.some(rtag => rtag === tag))) {
+                return;
+            }
             if (rmod.efficiency === 0) {
                 return;
             }
@@ -103,6 +225,17 @@ class ResourceCalculators {
                 capMult *= Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency);
             }
         });
+
+        if(!doUpdate) {
+            return {
+                income,
+                multiplier,
+                consumption,
+                rawCap,
+                capMult,
+                modifiersBreakdown
+            }
+        }
 
         gameResources.setResourceRawIncome(id, income);
         gameResources.setResourceMultiplier(id, multiplier);
@@ -115,9 +248,7 @@ class ResourceCalculators {
 
     getEffectBreakdowns(id) {
         const byRes = resourceModifiers.modifiersGroupped.byEffect[id];
-        if(id === 'workersEfficiency') {
-            console.log('byRes: ', byRes);
-        }
+
         const modifiersBreakdown = {
             income: [],
             multiplier: [],
@@ -324,7 +455,7 @@ class ResourceCalculators {
                 if(gameResources.getResource(rs).isMissing) {
                     this.resetConsumingEfficiency(rs);
                 }
-                this.assertResource(rs, true);
+                this.assertResource(rs);
             });
         }
         if(deps.effects.length) {
