@@ -37,7 +37,7 @@ class GameEntity {
         if(entity.resourceModifier && !entity.isAbstract) {
 
             // register resource modifier
-            const modif = {...entity.resourceModifier, level: entity.level, name: entity.name, allowedImpacts: entity.allowedImpacts};
+            const modif = {...entity.resourceModifier, level: entity.level, name: entity.name, allowedImpacts: entity.allowedImpacts, tags: entity.tags || []};
 
             if(!modif.allowedImpacts) {
                 console.error('Not allowed empty modifiers', entity);
