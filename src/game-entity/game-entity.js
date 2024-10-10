@@ -375,7 +375,7 @@ class GameEntity {
                     type
                 };
                 if(id === 'action_clean_stable') {
-                    console.log('Item: ', id, item, Formulas.calculateValue(formula, lvlToCalc), customMultiplier, formula, lvlToCalc, customEfficiency)
+                    console.log('Item: ', id, item, Formulas.calculateValue(formula, lvlToCalc), customMultiplier, formula, lvlToCalc, customEfficiency, intensityMultiplier)
                 }
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
                     continue;
