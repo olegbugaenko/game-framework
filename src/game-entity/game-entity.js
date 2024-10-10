@@ -362,20 +362,21 @@ class GameEntity {
                 }
                 const basic_name = efft.name;
                 let lvlToCalc = lvl + addLvl;
+                let customMultiplierLocal = customMultiplier;
                 if(scope === 'multiplier' || scope === 'capMult') {
                     lvlToCalc *= customEfficiency*intensityMultiplier;
                 } else {
-                    customMultiplier *= customEfficiency*intensityMultiplier;
+                    customMultiplierLocal *= customEfficiency*intensityMultiplier;
                 }
                 const item = {
                     id: key,
                     name: basic_name,
-                    value: Formulas.calculateValue(formula, lvlToCalc)*customMultiplier,
+                    value: Formulas.calculateValue(formula, lvlToCalc)*customMultiplierLocal,
                     scope,
                     type
                 };
                 if(id === 'action_clean_stable') {
-                    console.log('Item: ', id, item, Formulas.calculateValue(formula, lvlToCalc)*customMultiplier, Formulas.calculateValue(formula, lvlToCalc), customMultiplier, formula, lvlToCalc, customEfficiency, intensityMultiplier)
+                    console.log('Item: ', id, item, Formulas.calculateValue(formula, lvlToCalc)*customMultiplierLocal, Formulas.calculateValue(formula, lvlToCalc), customMultiplierLocal, formula, lvlToCalc, customEfficiency, intensityMultiplier)
                 }
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
                     continue;
