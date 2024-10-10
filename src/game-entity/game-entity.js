@@ -374,6 +374,9 @@ class GameEntity {
                     scope,
                     type
                 };
+                if(id === 'clean_stable') {
+                    console.log('Item: ', id, item, Formulas.calculateValue(formula, lvlToCalc), customMultiplier, formula, lvlToCalc, customEfficiency)
+                }
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
                     continue;
                 }
@@ -398,10 +401,10 @@ class GameEntity {
         let intensityMultiplier = 1.;
         if(modif.getCustomAmplifier) {
             intensityMultiplier = modif.getCustomAmplifier();
-            console.log('CustomAmpl: ', id, modif.getCustomAmplifier());
+            // console.log('CustomAmpl: ', id, modif.getCustomAmplifier());
         }
 
-        console.log('CustomMult: ', id, intensityMultiplier);
+        // console.log('CustomMult: ', id, intensityMultiplier);
 
         result.push(
             ...unpack(modif, 'resources', 'income', intensityMultiplier)
