@@ -13,7 +13,7 @@ export class ResourceApi {
 
         const result = [];
 
-        const unpack = (object, type, scope, log = false) => {
+        const unpack = (object, type, scope, intensityMultiplier = 1.) => {
             if(!object?.[scope]?.[type]) return [];
             const toUnpack = object?.[scope]?.[type];
             const results = [];

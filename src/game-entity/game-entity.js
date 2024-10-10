@@ -348,7 +348,7 @@ class GameEntity {
             lvl = entity.level;
         }
 
-        const unpack = (object, type, scope, log = false) => {
+        const unpack = (object, type, scope, intensityMultiplier = 1.) => {
             if(!object?.[scope]?.[type]) return [];
             const toUnpack = object?.[scope]?.[type];
             const results = [];
@@ -363,9 +363,9 @@ class GameEntity {
                 const basic_name = efft.name;
                 let lvlToCalc = lvl + addLvl;
                 if(scope === 'multiplier' || scope === 'capMult') {
-                    lvlToCalc *= customEfficiency;
+                    lvlToCalc *= customEfficiency*intensityMultiplier;
                 } else {
-                    customMultiplier *= customEfficiency;
+                    customMultiplier *= customEfficiency*intensityMultiplier;
                 }
                 const item = {
                     id: key,
@@ -395,35 +395,40 @@ class GameEntity {
             return result;
         }
 
+        let intensityMultiplier = 1.;
+        if(modif.getCustomAmplifier) {
+            intensityMultiplier = modif.getCustomAmplifier();
+        }
+
         result.push(
-            ...unpack(modif, 'resources', 'income')
+            ...unpack(modif, 'resources', 'income', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'effects', 'income')
+            ...unpack(modif, 'effects', 'income', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'resources', 'multiplier')
+            ...unpack(modif, 'resources', 'multiplier', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'effects', 'multiplier')
+            ...unpack(modif, 'effects', 'multiplier', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'resources', 'rawCap')
+            ...unpack(modif, 'resources', 'rawCap', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'effects', 'rawCap')
+            ...unpack(modif, 'effects', 'rawCap', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'resources', 'capMult')
+            ...unpack(modif, 'resources', 'capMult', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'effects', 'capMult')
+            ...unpack(modif, 'effects', 'capMult', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'resources', 'consumption')
+            ...unpack(modif, 'resources', 'consumption', intensityMultiplier)
         )
         result.push(
-            ...unpack(modif, 'effects', 'consumption')
+            ...unpack(modif, 'effects', 'consumption', intensityMultiplier)
         )
         return result;
     }

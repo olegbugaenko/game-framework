@@ -29,8 +29,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.income?.effects?.[id]) {
-                const inc = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level) * rmod.efficiency;
+                const inc = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
                 if(inc != null && inc > SMALL_NUMBER) {
 
                     modifiersBreakdown.income.push({
@@ -50,8 +54,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.multiplier?.resources?.[id]) {
-                const amt = Formulas.calculateValue(rmod.multiplier?.resources?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.multiplier?.resources?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
 
                 modifiersBreakdown.multiplier.push({
                     id: mod,
@@ -69,8 +77,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.consumption?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * rmod.efficiency;
+                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
                 modifiersBreakdown.consumption.push({
                     id: mod,
                     name: rmod.name,
@@ -88,8 +100,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.rawCap?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency;
+                const amt = Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
                 modifiersBreakdown.rawCap.push({
                     id: mod,
                     name: rmod.name,
@@ -107,8 +123,13 @@ class ResourceCalculators {
                 return;
             }
 
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
+
             if(rmod.capMult?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency*intensityMultiplier);
                 modifiersBreakdown.capMult.push({
                     id: mod,
                     name: rmod.name,
@@ -149,14 +170,18 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.income?.resources?.[id]) {
                 const amt = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level);
                 if(amt != null && Math.abs(amt) > SMALL_NUMBER) {
-                    income += amt * rmod.efficiency;
+                    income += amt * rmod.efficiency * intensityMultiplier;
                     modifiersBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt * rmod.efficiency
+                        value: amt * rmod.efficiency * intensityMultiplier
                     })
                 }
 
@@ -173,8 +198,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.multiplier?.resources?.[id]) {
-                const amt = Formulas.calculateValue(rmod.multiplier?.resources?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.multiplier?.resources?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
                 multiplier *= amt;
                 if(Math.abs(amt - 1) > SMALL_NUMBER) {
                     modifiersBreakdown.multiplier.push({
@@ -197,14 +226,18 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.consumption?.resources?.[id]) {
                 const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level);
-                consumption += amt * rmod.efficiency;
+                consumption += amt * rmod.efficiency * intensityMultiplier;
                 if(amt > SMALL_NUMBER) {
                     modifiersBreakdown.consumption.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt * rmod.efficiency
+                        value: amt * rmod.efficiency * intensityMultiplier
                     })
                 }
 
@@ -221,8 +254,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.rawCap?.resources?.[id]) {
-                rawCap += Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency;
+                rawCap += Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
             }
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.capMult?.forEach(mod => {
@@ -236,8 +273,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if(rmod.capMult?.resources?.[id]) {
-                capMult *= Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency);
+                capMult *= Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency*intensityMultiplier);
             }
         });
 
@@ -281,10 +322,14 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.income?.effects?.[id]) {
-                const inc = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency);
+                const inc = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
                 if(inc != null && inc > SMALL_NUMBER) {
-                    const amt = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency);
+                    const amt = Formulas.calculateValue(rmod.income?.effects?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
 
                     modifiersBreakdown.income.push({
                         id: mod,
@@ -303,8 +348,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.multiplier?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.multiplier?.effects?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.multiplier?.effects?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
 
                 modifiersBreakdown.multiplier.push({
                     id: mod,
@@ -322,8 +371,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.consumption?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
                 modifiersBreakdown.consumption.push({
                     id: mod,
                     name: rmod.name,
@@ -341,8 +394,12 @@ class ResourceCalculators {
             if (rmod.efficiency === 0) {
                 return;
             }
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
             if (rmod.rawCap?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.rawCap?.effects?.[id], rmod.level * rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.rawCap?.effects?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
                 modifiersBreakdown.rawCap.push({
                     id: mod,
                     name: rmod.name,
@@ -360,8 +417,13 @@ class ResourceCalculators {
                 return;
             }
 
+            let intensityMultiplier = 1.;
+            if(rmod.getCustomAmplifier) {
+                intensityMultiplier = rmod.getCustomAmplifier();
+            }
+
             if(rmod.capMult?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.capMult?.effects?.[id], rmod.level*rmod.efficiency);
+                const amt = Formulas.calculateValue(rmod.capMult?.effects?.[id], rmod.level*rmod.efficiency*intensityMultiplier);
                 modifiersBreakdown.capMult.push({
                     id: mod,
                     name: rmod.name,
