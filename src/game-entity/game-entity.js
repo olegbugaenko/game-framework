@@ -4,6 +4,7 @@ import {Formulas} from "../utils/formulas";
 import {gameEffects} from "../resources/game-effects";
 import {gameResources} from "../resources/game-resources";
 import {SMALL_NUMBER} from "../utils/consts";
+import {findNextUnlock} from "../utils/unlocks";
 
 class GameEntity {
 
@@ -11,7 +12,10 @@ class GameEntity {
         GameEntity.instance = this;
         this.entities = {};
         this.entitiesByTags = {};
-        this.unlockMapping = {};
+        this.unlockMapping = {
+            entity: {},
+            effect: {}
+        };
         // this.entitiesByDeps = {};
     }
 
@@ -39,10 +43,11 @@ class GameEntity {
         if (entity.unlockedBy) {
             for (const unlockInfo of entity.unlockedBy) {
                 const unlockerId = unlockInfo.id;
-                if (!this.unlockMapping[unlockerId]) {
-                    this.unlockMapping[unlockerId] = [];
+                const unlockerScope = unlockInfo.type;
+                if (!this.unlockMapping[unlockerScope][unlockerId]) {
+                    this.unlockMapping[unlockerScope][unlockerId] = [];
                 }
-                this.unlockMapping[unlockerId].push({
+                this.unlockMapping[unlockerScope][unlockerId].push({
                     unlockId: id,
                     level: unlockInfo.level
                 });
@@ -155,39 +160,26 @@ class GameEntity {
     }
 
     sortUnlockMappings() {
-        for (const unlockerId in this.unlockMapping) {
-            this.unlockMapping[unlockerId].sort((a, b) => a.level - b.level);
+        for (const scope in this.unlockMapping) {
+
+            for (const unlockerId in this.unlockMapping[scope]) {
+                this.unlockMapping[scope][unlockerId].sort((a, b) => a.level - b.level);
+            }
+
         }
+
     }
 
     initialize() {
         this.sortUnlockMappings();
     }
 
-    findNextUnlock(unlocks, currentLevel) {
-        let left = 0;
-        let right = unlocks.length - 1;
-        let nextUnlock = null;
-
-        while (left <= right) {
-            const mid = Math.floor((left + right) / 2);
-            if (unlocks[mid].level > currentLevel) {
-                nextUnlock = unlocks[mid];
-                right = mid - 1; // Search the left half
-            } else {
-                left = mid + 1; // Search the right half
-            }
-        }
-
-        return nextUnlock;
-    }
-
     getNextEntityUnlock(id) {
         const entity = this.getEntity(id);
 
-        if(!this.unlockMapping[id]) return null;
+        if(!this.unlockMapping['entity']?.[id]) return null;
 
-        return this.findNextUnlock(this.unlockMapping[id], entity.level);
+        return findNextUnlock(this.unlockMapping['entity'][id], entity.level);
     }
 
     countEntitiesByTags(tags, isOr = false, excludeIds = []) {

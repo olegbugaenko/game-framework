@@ -1,3 +1,6 @@
+import {findNextUnlock} from "../utils/unlocks";
+import {gameEntity} from "../game-entity";
+
 class GameEffects {
 
     constructor() {
@@ -40,7 +43,10 @@ class GameEffects {
         if(!this.effects[id]) {
             throw new Error('Undefined effect - '+id);
         }
-        return this.effects[id];
+        return {
+            ...this.effects[id],
+            nextUnlock: this.getNextEffectUnlock(id)
+        };
     }
 
     getEffectValue(id) {
@@ -118,8 +124,17 @@ class GameEffects {
         return suitableIds.map(id => ({
             id,
             ...this.effects[id],
-            isUnlocked: !this.effects[id].unlockCondition || this.effects[id].unlockCondition()
+            isUnlocked: !this.effects[id].unlockCondition || this.effects[id].unlockCondition(),
+            nextUnlock: this.getNextEffectUnlock(id)
         }));
+    }
+
+    getNextEffectUnlock(id) {
+        const effect = this.getEffectValue(id);
+
+        if(!gameEntity.unlockMapping['effect']?.[id]) return null;
+
+        return findNextUnlock(gameEntity.unlockMapping['effect'][id], effect);
     }
 
 }
