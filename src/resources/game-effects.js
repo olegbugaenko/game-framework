@@ -42,10 +42,7 @@ class GameEffects {
         if(!this.effects[id]) {
             throw new Error('Undefined effect - '+id);
         }
-        return {
-            ...this.effects[id],
-            nextUnlock: this.getNextEffectUnlock(id)
-        };
+        return this.effects[id];
     }
 
     getEffectValue(id) {
