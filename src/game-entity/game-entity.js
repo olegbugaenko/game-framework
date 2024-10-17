@@ -142,6 +142,11 @@ class GameEntity {
                     return false;
                 }
             }
+            if(unlockInfo.type === 'effect') {
+                if(gameEffects.getEffectValue(unlockInfo.id) < unlockInfo.level) {
+                    return false;
+                }
+            }
         }
         return true;
     }
