@@ -41,10 +41,10 @@ class GameEntity {
             for (const unlockInfo of entity.unlockedBy) {
                 const unlockerId = unlockInfo.id;
                 const unlockerScope = unlockInfo.type;
-                if (!this.unlockMapping[unlockerScope][unlockerId]) {
-                    this.unlockMapping[unlockerScope][unlockerId] = [];
+                if (!gameUnlocks.unlockMapping[unlockerScope][unlockerId]) {
+                    gameUnlocks.unlockMapping[unlockerScope][unlockerId] = [];
                 }
-                this.unlockMapping[unlockerScope][unlockerId].push({
+                gameUnlocks.unlockMapping[unlockerScope][unlockerId].push({
                     unlockId: id,
                     level: unlockInfo.level
                 });
