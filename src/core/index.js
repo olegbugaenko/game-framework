@@ -1,4 +1,5 @@
 import {gameResources, resourcesManager} from "../resources";
+import {gameEntity} from "../game-entity";
 
 export class GameCore {
 
@@ -43,9 +44,11 @@ export class GameCore {
             this.modules[key].initialize(this);
         }
         resourcesManager.initialize();
+        gameEntity.initialize();
         if(cb) {
             cb(this);
         }
+
         this.isInitialized = true;
     }
 

@@ -11,6 +11,7 @@ class GameEntity {
         GameEntity.instance = this;
         this.entities = {};
         this.entitiesByTags = {};
+        this.unlockMapping = {};
         // this.entitiesByDeps = {};
     }
 
@@ -34,6 +35,20 @@ class GameEntity {
         if(!entity.allowedImpacts || !entity.allowedImpacts.length) {
             entity.allowedImpacts = ['resources', 'effects'];
         }
+
+        if (entity.unlockedBy) {
+            for (const unlockInfo of entity.unlockedBy) {
+                const unlockerId = unlockInfo.entityId;
+                if (!this.unlockMapping[unlockerId]) {
+                    this.unlockMapping[unlockerId] = [];
+                }
+                this.unlockMapping[unlockerId].push({
+                    unlockId: entityId,
+                    level: unlockInfo.level
+                });
+            }
+        }
+
         if(entity.resourceModifier && !entity.isAbstract) {
 
             // register resource modifier
@@ -113,12 +128,66 @@ class GameEntity {
             ...this.getEntity(id),
             isUnlocked: this.isEntityUnlocked(id),
             isCapped: this.isCapped(id),
-            efficiency: this.getEntityEfficiency(id)
+            efficiency: this.getEntityEfficiency(id),
+            nextUnlock: this.getNextEntityUnlock(id)
         }));
     }
 
+    checkUnlockedBy(unlockedBy) {
+        for(const unlockInfo of unlockedBy) {
+            if(unlockInfo.type === 'entity') {
+                if(this.getLevel(unlockInfo.id) < unlockInfo.level) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     isEntityUnlocked(id) {
+        const entity = this.getEntity(id);
+
+        if(entity.unlockedBy) {
+            const unlockedByCheck = this.checkUnlockedBy(entity.unlockedBy);
+            if(!unlockedByCheck) return false;
+        }
         return !this.getEntity(id).unlockCondition || this.getEntity(id).unlockCondition();
+    }
+
+    sortUnlockMappings() {
+        for (const unlockerId in this.unlockMapping) {
+            this.unlockMapping[unlockerId].sort((a, b) => a.level - b.level);
+        }
+    }
+
+    initialize() {
+        this.sortUnlockMappings();
+    }
+
+    findNextUnlock(unlocks, currentLevel) {
+        let left = 0;
+        let right = unlocks.length - 1;
+        let nextUnlock = null;
+
+        while (left <= right) {
+            const mid = Math.floor((left + right) / 2);
+            if (unlocks[mid].level > currentLevel) {
+                nextUnlock = unlocks[mid];
+                right = mid - 1; // Search the left half
+            } else {
+                left = mid + 1; // Search the right half
+            }
+        }
+
+        return nextUnlock;
+    }
+
+    getNextEntityUnlock(id) {
+        const entity = this.getEntity(id);
+
+        if(!this.unlockMapping[id]) return null;
+
+        return this.findNextUnlock(this.unlockMapping[id], entity.level);
     }
 
     countEntitiesByTags(tags, isOr = false, excludeIds = []) {
@@ -211,16 +280,15 @@ class GameEntity {
     }
 
     levelUpEntity(id) {
-        const current = this.getEntity(id);
-        if(current.unlockCondition) {
-            const isUnlocked = current.unlockCondition();
-            if(!isUnlocked) {
-                return {
-                    success: false,
-                    reason: 'isLocked',
-                }
+        const isUnlocked = this.isEntityUnlocked(id);
+
+        if(!isUnlocked) {
+            return {
+                success: false,
+                reason: 'isLocked',
             }
         }
+        const current = this.getEntity(id);
         let max;
         if(current.getMaxLevel) {
             max = current.getMaxLevel();
@@ -262,11 +330,10 @@ class GameEntity {
     setEntityLevel(id, level, bForce = false) {
         const current = this.getEntity(id);
         if(!bForce) {
-            if(current.unlockCondition) {
-                const isUnlocked = current.unlockCondition();
-                if(!isUnlocked) {
-                    return false;
-                }
+            const isUnlocked = this.isEntityUnlocked(id);
+
+            if(!isUnlocked) {
+                return false;
             }
             let max;
             if(current.getMaxLevel) {
