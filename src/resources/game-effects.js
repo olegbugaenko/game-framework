@@ -1,5 +1,4 @@
-import {findNextUnlock} from "../utils/unlocks";
-import {gameEntity} from "../game-entity";
+import {gameUnlocks} from "../utils/unlocks";
 
 class GameEffects {
 
@@ -132,9 +131,9 @@ class GameEffects {
     getNextEffectUnlock(id) {
         const effect = this.getEffectValue(id);
 
-        if(!gameEntity.unlockMapping['effect']?.[id]) return null;
+        if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
 
-        return findNextUnlock(gameEntity.unlockMapping['effect'][id], effect);
+        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['effect'][id], effect);
     }
 
 }

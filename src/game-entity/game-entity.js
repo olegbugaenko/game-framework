@@ -4,7 +4,7 @@ import {Formulas} from "../utils/formulas";
 import {gameEffects} from "../resources/game-effects";
 import {gameResources} from "../resources/game-resources";
 import {SMALL_NUMBER} from "../utils/consts";
-import {findNextUnlock} from "../utils/unlocks";
+import {gameUnlocks} from "../utils/unlocks";
 
 class GameEntity {
 
@@ -12,10 +12,7 @@ class GameEntity {
         GameEntity.instance = this;
         this.entities = {};
         this.entitiesByTags = {};
-        this.unlockMapping = {
-            entity: {},
-            effect: {}
-        };
+
         // this.entitiesByDeps = {};
     }
 
@@ -159,27 +156,12 @@ class GameEntity {
         return !this.getEntity(id).unlockCondition || this.getEntity(id).unlockCondition();
     }
 
-    sortUnlockMappings() {
-        for (const scope in this.unlockMapping) {
-
-            for (const unlockerId in this.unlockMapping[scope]) {
-                this.unlockMapping[scope][unlockerId].sort((a, b) => a.level - b.level);
-            }
-
-        }
-
-    }
-
-    initialize() {
-        this.sortUnlockMappings();
-    }
-
     getNextEntityUnlock(id) {
         const entity = this.getEntity(id);
 
-        if(!this.unlockMapping['entity']?.[id]) return null;
+        if(!gameUnlocks.unlockMapping['entity']?.[id]) return null;
 
-        return findNextUnlock(this.unlockMapping['entity'][id], entity.level);
+        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['entity'][id], entity.level);
     }
 
     countEntitiesByTags(tags, isOr = false, excludeIds = []) {

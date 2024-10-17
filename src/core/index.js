@@ -1,5 +1,6 @@
 import {gameResources, resourcesManager} from "../resources";
 import {gameEntity} from "../game-entity";
+import {gameUnlocks} from "../utils/unlocks";
 
 export class GameCore {
 
@@ -44,7 +45,7 @@ export class GameCore {
             this.modules[key].initialize(this);
         }
         resourcesManager.initialize();
-        gameEntity.initialize();
+        gameUnlocks.initialize();
         if(cb) {
             cb(this);
         }
