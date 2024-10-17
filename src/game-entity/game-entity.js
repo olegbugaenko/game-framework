@@ -38,12 +38,12 @@ class GameEntity {
 
         if (entity.unlockedBy) {
             for (const unlockInfo of entity.unlockedBy) {
-                const unlockerId = unlockInfo.entityId;
+                const unlockerId = unlockInfo.id;
                 if (!this.unlockMapping[unlockerId]) {
                     this.unlockMapping[unlockerId] = [];
                 }
                 this.unlockMapping[unlockerId].push({
-                    unlockId: entityId,
+                    unlockId: id,
                     level: unlockInfo.level
                 });
             }
