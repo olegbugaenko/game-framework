@@ -136,6 +136,18 @@ class GameEffects {
         return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['effect'][id], effect);
     }
 
+    isEffectUnlocked(id) {
+        return !this.getEffect(id).unlockCondition || this.getEffect(id).unlockCondition();
+    }
+
+    fetchAllUnlocks() {
+        const result = [];
+        for (const unlockerId in gameUnlocks.unlockMapping['effect']) {
+            if(this.isEffectUnlocked(unlockerId)) {
+                result.push({...this.getEffect(unlockerId), nextUnlock: this.getNextEffectUnlock(unlockerId)})
+            }
+        }
+    }
 }
 
 export const gameEffects = GameEffects.instance || new GameEffects();

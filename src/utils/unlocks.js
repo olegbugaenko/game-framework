@@ -26,16 +26,6 @@ export class GameUnlocks {
         return nextUnlock;
     }
 
-    fetchAllUnlocks() {
-        for (const scope in this.unlockMapping) {
-
-            for (const unlockerId in this.unlockMapping[scope]) {
-
-            }
-
-        }
-    }
-
     sortUnlockMappings() {
         for (const scope in this.unlockMapping) {
 

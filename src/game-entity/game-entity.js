@@ -164,6 +164,15 @@ class GameEntity {
         return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['entity'][id], entity.level);
     }
 
+    fetchAllUnlocks() {
+        const result = [];
+        for (const unlockerId in gameUnlocks.unlockMapping['entity']) {
+            if(this.isEntityUnlocked(unlockerId)) {
+                result.push({...this.getEntity(unlockerId), nextUnlock: this.getNextEntityUnlock(unlockerId)})
+            }
+        }
+    }
+
     countEntitiesByTags(tags, isOr = false, excludeIds = []) {
         let suitableIds = []
         if(isOr) {
