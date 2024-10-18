@@ -53,6 +53,13 @@ class GameEntity {
 
         if(entity.resourceModifier && !entity.isAbstract) {
 
+            if('effectFactor' in entity) {
+                // console.log(`EffectFactor for ${entity.id}: `, entity.effectFactor);
+                entity.resourceModifier.effectFactor = entity.effectFactor;
+            } else {
+                entity.resourceModifier.effectFactor = 1.;
+            }
+
             // register resource modifier
             const modif = {...entity.resourceModifier, level: entity.level, name: entity.name, allowedImpacts: entity.allowedImpacts, tags: entity.tags || []};
 
