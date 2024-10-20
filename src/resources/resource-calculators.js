@@ -161,9 +161,6 @@ class ResourceCalculators {
         const byRes = resourceModifiers.modifiersGroupped.byResource[id];
         resourceModifiers.modifiersGroupped.byResource[id]?.income?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
-            if(skipByTags?.length) {
-                console.log('CheckSkip: ', skipByTags, rmod)
-            }
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
@@ -189,9 +186,6 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.multiplier?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
-            if(skipByTags?.length) {
-                console.log('CheckSkip: ', skipByTags, rmod)
-            }
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
@@ -217,9 +211,6 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.consumption?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
-            if(skipByTags?.length) {
-                console.log('CheckSkip: ', skipByTags, rmod)
-            }
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
@@ -245,9 +236,6 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.rawCap?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
-            if(skipByTags?.length) {
-                console.log('CheckSkip: ', skipByTags, rmod)
-            }
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
@@ -264,9 +252,6 @@ class ResourceCalculators {
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.capMult?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
-            if(skipByTags?.length) {
-                console.log('CheckSkip: ', skipByTags, rmod)
-            }
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
