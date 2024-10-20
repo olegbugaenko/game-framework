@@ -425,15 +425,16 @@ class GameEntity {
                 const basic_name = efft.name;
                 let lvlToCalc = lvl + addLvl;
                 let customMultiplierLocal = customMultiplier;
+                let val = Formulas.calculateValue(formula, lvlToCalc);
                 if(scope === 'multiplier' || scope === 'capMult') {
-                    lvlToCalc *= customEfficiency*intensityMultiplier;
+                    val = 1 + (val - 1) * customEfficiency*intensityMultiplier;
                 } else {
-                    customMultiplierLocal *= customEfficiency*intensityMultiplier;
+                    val = val * customEfficiency*intensityMultiplier;
                 }
                 const item = {
                     id: key,
                     name: basic_name,
-                    value: Formulas.calculateValue(formula, lvlToCalc)*customMultiplierLocal,
+                    value: val,
                     scope,
                     type
                 };
