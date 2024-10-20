@@ -453,6 +453,15 @@ class GameEntity {
 
         if(entity.isAbstract && calculateForAbstract) {
             modif = entity.resourceModifier;
+
+            if(modif) {
+                // checkCallables
+                ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'].forEach(scope => {
+                    if(modif[`get_${scope}`]) {
+                        modif[scope] = modif[`get_${scope}`]();
+                    }
+                })
+            }
         }
 
         if(!modif) {
