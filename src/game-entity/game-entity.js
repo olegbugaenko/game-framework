@@ -425,7 +425,7 @@ class GameEntity {
                 const basic_name = efft.name;
                 let lvlToCalc = lvl + addLvl;
                 let customMultiplierLocal = customMultiplier;
-                let val = Formulas.calculateValue(formula, lvlToCalc);
+                let val = customMultiplierLocal*Formulas.calculateValue(formula, lvlToCalc);
                 if(scope === 'multiplier' || scope === 'capMult') {
                     val = 1 + (val - 1) * customEfficiency*intensityMultiplier;
                 } else {
