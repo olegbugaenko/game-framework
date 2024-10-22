@@ -51,11 +51,13 @@ class GameEntity {
             }
         }
 
+        if(entity.resourceModifier && !entity.resourceModifier.customAmplifierApplyTypes) {
+            entity.resourceModifier.customAmplifierApplyTypes = ['resources', 'effects'];
+        }
+
         if(entity.resourceModifier && !entity.isAbstract) {
 
-            if(!entity.resourceModifier.customAmplifierApplyTypes) {
-                entity.resourceModifier.customAmplifierApplyTypes = ['resources', 'effects'];
-            }
+
 
             if('effectFactor' in entity) {
                 // console.log(`EffectFactor for ${entity.id}: `, entity.effectFactor);
