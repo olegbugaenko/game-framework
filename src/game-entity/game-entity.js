@@ -429,9 +429,15 @@ class GameEntity {
                         continue;
                     }
                 }
-                if(!object.customAmplifierApplyTypes.includes(type)) {
-                    intensityMultiplier = 1.;
+                try {
+                    if(!object.customAmplifierApplyTypes.includes(type)) {
+                        intensityMultiplier = 1.;
+                    }
+                } catch (e) {
+                    console.warn('Undefined uplifier types: '+id, object);
+                    throw e;
                 }
+
                 const basic_name = efft.name;
                 let lvlToCalc = lvl + addLvl;
                 let customMultiplierLocal = customMultiplier;
