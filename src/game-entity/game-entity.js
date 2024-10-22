@@ -53,6 +53,10 @@ class GameEntity {
 
         if(entity.resourceModifier && !entity.isAbstract) {
 
+            if(!entity.resourceModifier.customAmplifierApplyTypes) {
+                entity.resourceModifier.customAmplifierApplyTypes = ['resources', 'effects'];
+            }
+
             if('effectFactor' in entity) {
                 // console.log(`EffectFactor for ${entity.id}: `, entity.effectFactor);
                 entity.resourceModifier.effectFactor = entity.effectFactor;
@@ -66,6 +70,7 @@ class GameEntity {
             if(!modif.allowedImpacts) {
                 console.error('Not allowed empty modifiers', entity);
             }
+
             if(!modif.id) {
                 modif.id = `entity_${id}`
             }
@@ -421,6 +426,9 @@ class GameEntity {
                     if(!efft.unlockCondition()) {
                         continue;
                     }
+                }
+                if(!object.customAmplifierApplyTypes.includes(type)) {
+                    intensityMultiplier = 1.;
                 }
                 const basic_name = efft.name;
                 let lvlToCalc = lvl + addLvl;

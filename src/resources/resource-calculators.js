@@ -30,7 +30,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.income?.effects?.[id]) {
@@ -55,7 +55,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.multiplier?.resources?.[id]) {
@@ -78,7 +78,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.effects?.[id]) {
@@ -101,7 +101,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.rawCap?.effects?.[id]) {
@@ -124,7 +124,7 @@ class ResourceCalculators {
             }
 
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
 
@@ -168,7 +168,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.income?.resources?.[id]) {
@@ -193,7 +193,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.multiplier?.resources?.[id]) {
@@ -218,7 +218,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.resources?.[id]) {
@@ -243,7 +243,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.rawCap?.resources?.[id]) {
@@ -259,7 +259,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if(rmod.capMult?.resources?.[id]) {
@@ -308,7 +308,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('effects')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.income?.effects?.[id]) {
@@ -334,7 +334,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('effects')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.multiplier?.effects?.[id]) {
@@ -357,7 +357,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('effects')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.effects?.[id]) {
@@ -380,7 +380,7 @@ class ResourceCalculators {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('effects')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.rawCap?.effects?.[id]) {
@@ -403,7 +403,7 @@ class ResourceCalculators {
             }
 
             let intensityMultiplier = rmod.effectFactor;
-            if(rmod.getCustomAmplifier) {
+            if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('effects')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
 
