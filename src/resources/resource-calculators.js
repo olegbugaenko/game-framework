@@ -547,7 +547,7 @@ class ResourceCalculators {
                     return;
                 }
                 this.updateModifierEfficiency(consumer.id, consumer.efficiency * efficiency);
-                if(efficiency < 0) {
+                if(efficiency < 1) {
                     consumer.bottleNeck = resourceId;
                 }
 
