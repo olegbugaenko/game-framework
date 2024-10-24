@@ -64,7 +64,7 @@ class GameResources {
         } else {
             suitableIds = [...(this.resourcesByTags[tags[0]] || [])];
             for(let i = 1; i < tags.length; i++) {
-                suitableIds = suitableIds.filter(st => (this.resourcesByTags[tags[i]] || []).find(st))
+                suitableIds = suitableIds.filter(st => (this.resourcesByTags[tags[i]] || []).includes(st))
             }
         }
         if(excludeIds && excludeIds.length) {
