@@ -566,6 +566,7 @@ class ResourceCalculators {
                 if(!bCheckBottleneck) {
                     this.updateModifierEfficiency(consumer.id, 1);
                 } else {
+                    console.log('Checking bottleneck for '+resourceId, consumer);
                     if(consumer.bottleNeck === resourceId) {
                         this.updateModifierEfficiency(consumer.id,1);
                     }
