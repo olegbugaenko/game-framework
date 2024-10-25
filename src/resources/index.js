@@ -53,7 +53,7 @@ class ResourcesManager {
 
         for(const resourceId in gameResources.resources) {
             if(gameResources.resources[resourceId].isService) {
-                gameResources.setResource(resourceId, gameResources.resources[resourceId].balance, true);
+                gameResources.setResource(resourceId, gameResources.resources[resourceId].balance, false);
             } else {
                 gameResources.addResource(resourceId, gameResources.resources[resourceId].balance*dT);
             }

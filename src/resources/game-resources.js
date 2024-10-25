@@ -131,7 +131,7 @@ class GameResources {
         if(pAmount !== rs.amount) {
             if(rs.isService && rs.targetEfficiency < 1 && !bPreventReset) {
                 console.log('resetEffService: ', rs, amount);
-                resourceCalculators.resetConsumingEfficiency(id);
+                resourceCalculators.resetConsumingEfficiency(id, true);
             }
             resourceModifiers.modifiersGroupped.byResourceDeps[id]?.forEach(modifierId => {
                 resourceModifiers.cacheModifier(modifierId);
