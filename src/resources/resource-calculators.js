@@ -82,7 +82,8 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
+                const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * relevantEfficiency * intensityMultiplier;
                 modifiersBreakdown.consumption.push({
                     id: mod,
                     name: rmod.name,
@@ -223,12 +224,13 @@ class ResourceCalculators {
             }
             if (rmod.consumption?.resources?.[id]) {
                 const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level);
-                consumption += amt * rmod.efficiency * intensityMultiplier;
+                const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                consumption += amt * relevantEfficiency * intensityMultiplier;
                 if(amt > SMALL_NUMBER) {
                     modifiersBreakdown.consumption.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt * rmod.efficiency * intensityMultiplier
+                        value: amt * relevantEfficiency * intensityMultiplier
                     })
                 }
 
@@ -361,7 +363,8 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.effects?.[id]) {
-                const amt = Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
+                const relevantEfficiency = rmod.consumption?.effects?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                const amt = Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level) * relevantEfficiency * intensityMultiplier;
                 modifiersBreakdown.consumption.push({
                     id: mod,
                     name: rmod.name,
