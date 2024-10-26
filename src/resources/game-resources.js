@@ -130,7 +130,7 @@ class GameResources {
             resourceCalculators.regenerateModifier(rs.modifier.id);
             console.log('rs.mod', rs.modifier);
         }
-        if(pAmount !== rs.amount) {
+        if(pAmount !== rs.amount && Math.abs((pAmount - rs.amount) / (pAmount + rs.amount)) > SMALL_NUMBER) {
             if(rs.isService && rs.targetEfficiency < 1 && !bPreventReset) {
                 console.log('resetEffService: ', rs, amount);
                 resourceCalculators.resetConsumingEfficiency(id, true);
