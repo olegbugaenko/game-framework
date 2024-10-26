@@ -74,15 +74,15 @@ class ResourceCalculators {
             if (rmod.level === 0) {
                 return;
             }
-            if (rmod.efficiency === 0) {
-                return;
-            }
             let intensityMultiplier = rmod.effectFactor;
             if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.effects?.[id]) {
                 const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                if (relevantEfficiency === 0) {
+                    return;
+                }
                 const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * relevantEfficiency * intensityMultiplier;
                 modifiersBreakdown.consumption.push({
                     id: mod,
@@ -215,9 +215,6 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if (rmod.efficiency === 0) {
-                return;
-            }
             let intensityMultiplier = rmod.effectFactor;
             if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
@@ -225,6 +222,9 @@ class ResourceCalculators {
             if (rmod.consumption?.resources?.[id]) {
                 const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level);
                 const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                if (relevantEfficiency === 0) {
+                    return;
+                }
                 consumption += amt * relevantEfficiency * intensityMultiplier;
                 if(amt > SMALL_NUMBER) {
                     modifiersBreakdown.consumption.push({
@@ -355,15 +355,15 @@ class ResourceCalculators {
             if (rmod.level === 0) {
                 return;
             }
-            if (rmod.efficiency === 0) {
-                return;
-            }
             let intensityMultiplier = rmod.effectFactor;
             if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('effects')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.effects?.[id]) {
                 const relevantEfficiency = rmod.consumption?.effects?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                if (relevantEfficiency === 0) {
+                    return;
+                }
                 const amt = Formulas.calculateValue(rmod.consumption?.effects?.[id], rmod.level) * relevantEfficiency * intensityMultiplier;
                 modifiersBreakdown.consumption.push({
                     id: mod,
