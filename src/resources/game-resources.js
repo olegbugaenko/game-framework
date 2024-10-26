@@ -104,7 +104,9 @@ class GameResources {
             console.log('rs.mod', rs.modifier);
         }
         if(amtToAdd > SMALL_NUMBER*rs.consumption && rs.targetEfficiency < 1) {
-            console.log('EntEEF resetEff: ', rs, amtToAdd, rs.targetEfficiency);
+            if(rs.id === 'inventory_ginseng') {
+                console.log('EntEEF resetEff: ', rs, amtToAdd, rs.targetEfficiency);
+            }
             resourceCalculators.resetConsumingEfficiency(id, true);
         }
         if(amtToAdd) {
