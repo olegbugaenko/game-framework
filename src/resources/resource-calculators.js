@@ -569,10 +569,10 @@ class ResourceCalculators {
                 if(!bCheckBottleneck) {
                     this.updateModifierEfficiency(consumer.id, 1);
                 } else {
-                    console.log('Checking bottleneck for '+resourceId, consumer);
+                    console.log('CHKN Checking bottleneck for '+resourceId, consumer);
                     //
                     // We should get here next target, but for now use this dirty hack
-                    const targetEff = Math.min(1, Math.max(consumer.efficiency, SMALL_NUMBER)*4);
+                    const targetEff = Math.min(1, Math.max(consumer.efficiency, 100*SMALL_NUMBER)*4);
                     if(consumer.bottleNeck === resourceId) {
                         this.updateModifierEfficiency(consumer.id,targetEff);
                     }
