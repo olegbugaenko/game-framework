@@ -5,7 +5,7 @@ export class Formulas {
     }
 
     static calculateConst(formula, x) {
-        return x <= 1 ? formula.B : formula.A + formula.B;
+        return x < 1 ? formula.B : formula.A + formula.B;
     }
 
     static calculateExponentialValue(formula, x) {
