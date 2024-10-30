@@ -49,6 +49,12 @@ class GameResources {
         return rs;
     }
 
+
+    isResourceUnlocked(id) {
+        return !this.resources[id].unlockCondition || this.resources[id].unlockCondition()
+    }
+
+
     assertToCapOrEmpty(id) {
         const rs = this.getResource(id);
         if(rs.balance > 0) {
