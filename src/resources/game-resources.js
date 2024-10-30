@@ -7,6 +7,7 @@ class GameResources {
     constructor() {
         this.resources = {};
         this.resourcesByTags = {};
+        this.delayedResets = {};
         GameResources.instance = this;
     }
 
@@ -89,7 +90,7 @@ class GameResources {
         return rs.cap;
     }
 
-    addResource(id, amount) {
+    addResource(id, amount, isDelayed = false) {
         const rs = this.getResource(id);
         if(rs.unlockCondition && !rs.unlockCondition()) return ;
         if(rs.isService) return ;
@@ -105,9 +106,13 @@ class GameResources {
         }
         if(amtToAdd > SMALL_NUMBER*rs.consumption && rs.targetEfficiency < 1) {
             if(rs.id === 'knowledge') {
-                console.log('CHKN EntEEF resetEff: ', rs, amtToAdd, rs.targetEfficiency);
+                console.log('CHKN EntEEF resetEff: ', rs, amtToAdd, rs.targetEfficiency, isDelayed);
             }
-            resourceCalculators.resetConsumingEfficiency(id, true);
+            if(isDelayed) {
+                this.delayedResets[id] = amtToAdd;
+            } else {
+                resourceCalculators.resetConsumingEfficiency(id, true);
+            }
         }
         if(amtToAdd) {
             resourceModifiers.modifiersGroupped.byResourceDeps[id]?.forEach(modifierId => {
@@ -118,7 +123,7 @@ class GameResources {
         return rs.amount;
     }
 
-    setResource(id, amount, bPreventReset = false) {
+    setResource(id, amount, bPreventReset = false, delayedReset = false) {
         const rs = this.getResource(id);
         const pAmount = rs.amount;
         rs.amount = amount;
@@ -133,7 +138,12 @@ class GameResources {
         if(pAmount !== rs.amount && Math.abs((pAmount - rs.amount) / (pAmount + rs.amount)) > SMALL_NUMBER) {
             if(rs.isService && rs.targetEfficiency < 1 && !bPreventReset) {
                 console.log('resetEffService: ', rs, amount);
-                resourceCalculators.resetConsumingEfficiency(id, true);
+                if(delayedReset) {
+                    this.delayedResets[id] = amount;
+                } else {
+                    resourceCalculators.resetConsumingEfficiency(id, true);
+                }
+
             }
             resourceModifiers.modifiersGroupped.byResourceDeps[id]?.forEach(modifierId => {
                 resourceModifiers.cacheModifier(modifierId);
@@ -146,6 +156,13 @@ class GameResources {
             }
         }
         return rs.amount;
+    }
+
+    handleDelayed() {
+        for(const id in this.delayedResets) {
+            resourceCalculators.resetConsumingEfficiency(id, true);
+        }
+        this.delayedResets = {};
     }
 
     setResourceRawIncome(id, income) {

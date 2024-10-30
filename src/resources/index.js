@@ -20,6 +20,7 @@ class ResourcesManager {
     tick(dT) {
         let isAssertsFinished = false;
         const start = performance.now();
+        gameResources.handleDelayed();
         // console.log('START_ITER: EntEEF', resourceModifiers.getModifier('entity_runningAction').efficiency);
 
         while(!isAssertsFinished) {
@@ -53,9 +54,9 @@ class ResourcesManager {
 
         for(const resourceId in gameResources.resources) {
             if(gameResources.resources[resourceId].isService) {
-                gameResources.setResource(resourceId, gameResources.resources[resourceId].balance, false);
+                gameResources.setResource(resourceId, gameResources.resources[resourceId].balance, false, true);
             } else {
-                gameResources.addResource(resourceId, gameResources.resources[resourceId].balance*dT);
+                gameResources.addResource(resourceId, gameResources.resources[resourceId].balance*dT, true);
             }
 
         }
