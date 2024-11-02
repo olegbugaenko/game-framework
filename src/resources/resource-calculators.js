@@ -158,6 +158,11 @@ class ResourceCalculators {
             multiplier: [],
             consumption: []
         };
+
+        const storageBreakdown = {
+            income: [],
+            multiplier: []
+        }
         //
         const byRes = resourceModifiers.modifiersGroupped.byResource[id];
         resourceModifiers.modifiersGroupped.byResource[id]?.income?.forEach(mod => {
@@ -249,7 +254,17 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.rawCap?.resources?.[id]) {
-                rawCap += Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
+                const amt = Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
+
+                rawCap += amt;
+                if(amt > SMALL_NUMBER) {
+                    storageBreakdown.income.push({
+                        id: mod,
+                        name: rmod.name,
+                        value: amt
+                    })
+                }
+
             }
         });
         resourceModifiers.modifiersGroupped.byResource[id]?.capMult?.forEach(mod => {
@@ -265,7 +280,16 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if(rmod.capMult?.resources?.[id]) {
-                capMult *= Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency*intensityMultiplier);
+                const amt = Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency*intensityMultiplier);
+                capMult *= amt;
+
+                if(Math.abs(amt - 1) > SMALL_NUMBER) {
+                    storageBreakdown.multiplier.push({
+                        id: mod,
+                        name: rmod.name,
+                        value: amt
+                    })
+                }
             }
         });
 
@@ -277,7 +301,8 @@ class ResourceCalculators {
                 rawCap,
                 capMult,
                 balance: income*multiplier - consumption,
-                modifiersBreakdown
+                modifiersBreakdown,
+                storageBreakdown
             }
         }
 
@@ -286,7 +311,7 @@ class ResourceCalculators {
         gameResources.setResourceRawConsumption(id, consumption);
         gameResources.setResourceRawCap(id, rawCap);
         gameResources.setResourceCapMult(id, capMult);
-        gameResources.setBreakdown(id, modifiersBreakdown);
+        gameResources.setBreakdown(id, modifiersBreakdown, storageBreakdown);
         // console.log(`asserted[${id}]: `, gameResources.resources[id]);
     }
 

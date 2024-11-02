@@ -201,9 +201,10 @@ class GameResources {
         this.assertCap(id);
     }
 
-    setBreakdown(id, breakDown) {
+    setBreakdown(id, breakDown, storageBreakdown) {
         const rs = this.getResource(id);
         rs.breakDown = breakDown;
+        rs.storageBreakdown = storageBreakdown;
     }
 
     save() {
