@@ -12,6 +12,10 @@ export class Formulas {
         return formula.B*Math.pow(formula.A, x);
     }
 
+    static calculatePolyExponential(formula, x) {
+        return formula.B + formula.A * x * (formula.C ** x);
+    }
+
     static calculateValue(formula, x) {
         if(formula.type === 0) {
             return Formulas.calculateLinearValue(formula, x)
@@ -19,6 +23,8 @@ export class Formulas {
             return Formulas.calculateExponentialValue(formula, x)
         } else if(formula.type === 2) {
             return Formulas.calculateConst(formula, x)
+        } else if(formula.type === 3) {
+            return Formulas.calculatePolyExponential(formula, x)
         }
     }
 
