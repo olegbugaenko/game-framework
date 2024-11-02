@@ -13,7 +13,7 @@ export class Formulas {
     }
 
     static calculatePolyExponential(formula, x) {
-        return formula.B + formula.A * x * (formula.C ** x);
+        return formula.B + formula.A * x * Math.pow(formula.C, x);
     }
 
     static calculateValue(formula, x) {
@@ -25,6 +25,8 @@ export class Formulas {
             return Formulas.calculateConst(formula, x)
         } else if(formula.type === 3) {
             return Formulas.calculatePolyExponential(formula, x)
+        } else {
+            throw new Error('Invalid formula type: '+formula.type)
         }
     }
 
