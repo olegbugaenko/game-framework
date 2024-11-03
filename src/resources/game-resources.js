@@ -136,7 +136,7 @@ class GameResources {
         if(rs.amount < 0) {
             rs.amount = 0;
         }
-        if(id === 'crafting_effort') {
+        if(id === 'crafting_ability') {
             console.log('set resource: '+id, pAmount, amount, JSON.parse(JSON.stringify(rs)));
         }
         if(rs.modifier && amount > 0) {
