@@ -602,13 +602,14 @@ class ResourceCalculators {
     resetConsumingEfficiency(resourceId, bCheckBottleneck = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
         let targetEff = 1.;
+        let affectedResources = [];
         if(consuming && consuming.length) {
             consuming.forEach(consumerId => {
                 const consumer = resourceModifiers.getModifier(consumerId);
                 if(!bCheckBottleneck) {
                     this.updateModifierEfficiency(consumer.id, 1);
                 } else {
-                    console.log('CHKN Checking bottleneck for '+resourceId, consumer);
+                    console.log('CHKN Checking bottleneck for '+resourceId, consumer.id, consumer.bottleNeck);
                     //
                     // We should get here next target, but for now use this dirty hack
                     targetEff = 1.; // Math.min(1, Math.max(consumer.efficiency, 100*SMALL_NUMBER)*4);
@@ -617,10 +618,16 @@ class ResourceCalculators {
                     }
                 }
 
+                affectedResources.push(...resourceModifiers.getDependenciesToRegenerate(consumer.id))
+
             })
         }
         gameResources.getResource(resourceId).isMissing = targetEff >= 1.;
         gameResources.getResource(resourceId).targetEfficiency = targetEff;
+
+        return {
+            affectedResources
+        }
     }
 
     isAffordable(prices) {

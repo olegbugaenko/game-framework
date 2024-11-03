@@ -59,10 +59,26 @@ class ResourcesManager {
                         isAssertsFinished = false;
                     } else {
                         if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
-                            console.log('Toggling '+resourceId);
-                            resourceCalculators.resetConsumingEfficiency(resourceId, true);
+                            // console.log('Toggling '+resourceId);
+                            // ми тугланули на 100% ресурс котрий ми начебто міссили. (crafting_ability)
+                            // але цей тугл тягне за собою необхідність апдейту тих resourceModifiers, у яких ботлнек - цей ресурс
+                            // Ми апдейтимо ефективність крафту паперу на 1, але у магічного паперу ботлнек - папір, якого ми не чіпаємо
+                            // Тому, нам потрібно також перевіряти список ресурсів, у яких баланс > 0 і ми їх місаємо.
+                            // Для таких ресурсів вартувало б ресетити ефективність
+                            // Якщо ми ресетнемо ефективність паперу, позаяк його баланс є > 0, і він міссінг - це призведе
+                            // до того, що баланс паперу знову стане негативним, і ми будемо змушені його перерахувати.
+                            // Для того нам потрібно баланс паперу додавати в масив
+                            // Як знати що саме його додати - це ресурс, який генерується чи мультиплікується ентітьою,
+                            // котрій ми шомно ресетнули
+                            // Тобто, якщо ми ресетнули ефективність по ресурсу crafting_ability - перевіряємо усе що генерилося
+                            // тим що консюмить resourceId, і докидуємо ссууудааа
+                            const affected = resourceCalculators.resetConsumingEfficiency(resourceId, true);
                             gameResources.resources[resourceId].isMissing = false;
                             newResourcesToUpdate.push(resourceId);
+                            if(affected.affectedResources) {
+                                newResourcesToUpdate.push(affected.affectedResources);
+                            }
+                            console.log('Toggling '+resourceId, newResourcesToUpdate);
                         }
                     }
                     resourcesToUpdate = [...new Set(newResourcesToUpdate)];
