@@ -76,7 +76,7 @@ class ResourcesManager {
                             gameResources.resources[resourceId].isMissing = false;
                             newResourcesToUpdate.push(resourceId);
                             if(affected.affectedResources) {
-                                newResourcesToUpdate.push(affected.affectedResources);
+                                newResourcesToUpdate.push(...affected.affectedResources);
                             }
                             console.log('Toggling '+resourceId, newResourcesToUpdate);
                         }
