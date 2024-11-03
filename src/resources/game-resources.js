@@ -111,9 +111,6 @@ class GameResources {
             console.log('rs.mod', rs.modifier);
         }
         if(amtToAdd > SMALL_NUMBER*rs.consumption && rs.targetEfficiency < 1) {
-            if(rs.id === 'knowledge') {
-                console.log('CHKN EntEEF resetEff: ', rs, amtToAdd, rs.targetEfficiency, isDelayed);
-            }
             if(isDelayed) {
                 this.delayedResets[id] = amtToAdd;
             } else {
@@ -135,9 +132,6 @@ class GameResources {
         rs.amount = amount;
         if(rs.amount < 0) {
             rs.amount = 0;
-        }
-        if(id === 'crafting_ability') {
-            console.log('set resource: '+id, pAmount, amount, JSON.parse(JSON.stringify(rs)));
         }
         if(rs.modifier && amount > 0) {
             rs.modifier.level = rs.amount;
