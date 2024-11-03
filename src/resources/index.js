@@ -20,8 +20,10 @@ class ResourcesManager {
     tick(dT) {
         let isAssertsFinished = false;
         const start = performance.now();
+        console.log('iter started: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
         gameResources.handleDelayed();
         // console.log('START_ITER: EntEEF', resourceModifiers.getModifier('entity_runningAction').efficiency);
+        console.log('asserting: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
 
         while(!isAssertsFinished) {
             isAssertsFinished = true;
@@ -63,6 +65,9 @@ class ResourcesManager {
             }
 
         }
+
+
+        console.log('iter ended: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
 
         // console.log('END_UP: EntEEF', resourceModifiers.getModifier('entity_runningAction').efficiency);
 
