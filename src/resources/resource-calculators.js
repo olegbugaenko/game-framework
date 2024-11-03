@@ -618,7 +618,7 @@ class ResourceCalculators {
                     }
                 }
 
-                affectedResources.push(...resourceModifiers.getDependenciesToRegenerate(consumer.id))
+                affectedResources.push(...resourceModifiers.getDependenciesToRegenerate(consumer.id).resources)
 
             })
         }
