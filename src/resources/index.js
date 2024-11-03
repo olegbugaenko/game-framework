@@ -58,8 +58,8 @@ class ResourcesManager {
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
                         isAssertsFinished = false;
                     } else {
-                        console.log('Toggling '+resourceId);
                         if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
+                            console.log('Toggling '+resourceId);
                             resourceCalculators.resetConsumingEfficiency(resourceId, true);
                             gameResources.resources[resourceId].isMissing = false;
                             newResourcesToUpdate.push(resourceId);
@@ -68,7 +68,7 @@ class ResourcesManager {
                     resourcesToUpdate = [...new Set(newResourcesToUpdate)];
                 }
             }
-            console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate);
+            console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources['inventory_paper'])));
         }
         const end = performance.now();
         // console.log('FINISH_ITER: EntEEF', end - start, resourceModifiers.getModifier('entity_runningAction').efficiency);
