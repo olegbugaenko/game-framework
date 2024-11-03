@@ -79,6 +79,7 @@ class ResourcesManager {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
                             console.log('Toggling '+resourceId, newResourcesToUpdate);
+                            isAssertsFinished = false;
                         }
                     }
                     resourcesToUpdate = [...new Set(newResourcesToUpdate)];
