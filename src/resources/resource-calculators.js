@@ -584,8 +584,8 @@ class ResourceCalculators {
                 if(efficiency < 1) {
                     consumer.bottleNeck = resourceId;
                 }
-                if(resourceId === 'crafting_ability') {
-                    console.log('Consumers of '+resourceId, consumer.id, consumer.efficiency, efficiency, JSON.parse(JSON.stringify(gameResources.getResource('crafting_ability'))), consumer.nIter);
+                if(resourceId === 'crafting_ability' || resourceId === 'inventory_paper' || resourceId === 'inventory_enchanted_paper') {
+                    console.log('Consumers of '+resourceId, consumer.id, consumer.efficiency, efficiency, JSON.parse(JSON.stringify(affectedResourceIds)), consumer.nIter);
                 }
                 /*if(consumerId === 'entity_runningAction') {
                     console.log('AfterUpd EntEEF: ', JSON.stringify(resourceModifiers.getModifier(consumerId)), efficiency);

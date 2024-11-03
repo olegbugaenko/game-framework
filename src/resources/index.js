@@ -61,7 +61,7 @@ class ResourcesManager {
                     resourcesToUpdate = [...new Set(newResourcesToUpdate)];
                 }
             }
-            console.log(`Iter: ${iter}`, resourcesToUpdate.length);
+            console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate);
         }
         const end = performance.now();
         // console.log('FINISH_ITER: EntEEF', end - start, resourceModifiers.getModifier('entity_runningAction').efficiency);
