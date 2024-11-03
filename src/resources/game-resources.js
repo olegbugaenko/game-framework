@@ -143,7 +143,7 @@ class GameResources {
         }
         if(pAmount !== rs.amount && Math.abs((pAmount - rs.amount) / (pAmount + rs.amount)) > SMALL_NUMBER) {
             if(rs.isService && rs.targetEfficiency < 1 && !bPreventReset) {
-                console.log('resetEffService: ', rs, amount);
+                console.log('resetEffService: ', rs, pAmount, amount, delayedReset);
                 if(delayedReset) {
                     this.delayedResets[id] = amount;
                 } else {
