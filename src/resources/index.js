@@ -89,6 +89,7 @@ class ResourcesManager {
             console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources['inventory_paper'])));
             if(iter > maxIter) {
                 console.error('CRITICAL ERROR: not able to find resources divergence.', JSON.parse(JSON.stringify(gameResources.resources)));
+                isAssertsFinished = true;
             }
         }
         const end = performance.now();
