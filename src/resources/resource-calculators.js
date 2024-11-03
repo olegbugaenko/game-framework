@@ -561,6 +561,8 @@ class ResourceCalculators {
     toggleConsumingEfficiency(resourceId, efficiency, bReset = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
 
+        let affectedResourceIds = [];
+
         // console.log('Consuming: ', resourceModifiers.modifiersGroupped.byResource);
         if(consuming && consuming.length) {
             consuming.forEach(consumerId => {
@@ -576,6 +578,9 @@ class ResourceCalculators {
                     return;
                 }
                 this.updateModifierEfficiency(consumer.id, consumer.efficiency * efficiency);
+                if(consumer.bottleNeck && consumer.bottleNeck !== resourceId) {
+                    affectedResourceIds.push(consumer.bottleNeck);
+                }
                 if(efficiency < 1) {
                     consumer.bottleNeck = resourceId;
                 }
@@ -586,6 +591,11 @@ class ResourceCalculators {
                     console.log('AfterUpd EntEEF: ', JSON.stringify(resourceModifiers.getModifier(consumerId)), efficiency);
                 }*/
             })
+        }
+
+        return {
+            efficiency,
+            affectedResourceIds
         }
     }
 
