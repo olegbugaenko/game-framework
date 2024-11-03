@@ -74,11 +74,12 @@ class ResourcesManager {
                             // тим що консюмить resourceId, і докидуємо ссууудааа
                             const affected = resourceCalculators.resetConsumingEfficiency(resourceId, true);
                             gameResources.resources[resourceId].isMissing = false;
+                            const prUp = [...newResourcesToUpdate];
                             newResourcesToUpdate.push(resourceId);
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            console.log('Toggling '+resourceId, newResourcesToUpdate);
+                            console.log('Toggling '+resourceId, newResourcesToUpdate, prUp);
                             isAssertsFinished = false;
                         }
                     }
@@ -86,6 +87,9 @@ class ResourcesManager {
                 }
             }
             console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources['inventory_paper'])));
+            if(iter > maxIter) {
+                console.error('CRITICAL ERROR: not able to find resources divergence.', JSON.parse(JSON.stringify(gameResources.resources)));
+            }
         }
         const end = performance.now();
         // console.log('FINISH_ITER: EntEEF', end - start, resourceModifiers.getModifier('entity_runningAction').efficiency);
