@@ -54,6 +54,9 @@ class ResourcesManager {
 
         for(const resourceId in gameResources.resources) {
             if(gameResources.resources[resourceId].isService) {
+                if(resourceId === 'crafting_ability') {
+                    console.log('Set at iter '+resourceId, gameResources.resources[resourceId].amount, gameResources.resources[resourceId].balance, gameResources.resources[resourceId].targetEfficiency, gameResources.resources[resourceId]);
+                }
                 gameResources.setResource(resourceId, gameResources.resources[resourceId].balance, false, true);
             } else {
                 gameResources.addResource(resourceId, gameResources.resources[resourceId].balance*dT, true);
