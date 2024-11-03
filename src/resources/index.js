@@ -31,7 +31,7 @@ class ResourcesManager {
             resourcesToUpdate.push(resourceId);
         }
 
-        while(!isAssertsFinished && resourcesToUpdate.length > 0) {
+        while(!isAssertsFinished) {
             isAssertsFinished = true;
             iter++;
             let newResourcesToUpdate = [];
@@ -57,6 +57,13 @@ class ResourcesManager {
                         gameResources.resources[resourceId].amount = 0;
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
                         isAssertsFinished = false;
+                    } else {
+                        console.log('Toggling '+resourceId);
+                        if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
+                            resourceCalculators.resetConsumingEfficiency(resourceId, true);
+                            gameResources.resources[resourceId].isMissing = false;
+                            newResourcesToUpdate.push(resourceId);
+                        }
                     }
                     resourcesToUpdate = [...new Set(newResourcesToUpdate)];
                 }
