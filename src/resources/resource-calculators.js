@@ -560,6 +560,7 @@ class ResourceCalculators {
 
     toggleConsumingEfficiency(resourceId, efficiency, bReset = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
+
         // console.log('Consuming: ', resourceModifiers.modifiersGroupped.byResource);
         if(consuming && consuming.length) {
             consuming.forEach(consumerId => {
@@ -578,7 +579,9 @@ class ResourceCalculators {
                 if(efficiency < 1) {
                     consumer.bottleNeck = resourceId;
                 }
-
+                if(resourceId === 'crafting_ability') {
+                    console.log('Consumers of '+resourceId, consumer.id, consumer.efficiency, efficiency, JSON.parse(JSON.stringify(gameResources.getResource('crafting_ability'))), consumer.nIter);
+                }
                 /*if(consumerId === 'entity_runningAction') {
                     console.log('AfterUpd EntEEF: ', JSON.stringify(resourceModifiers.getModifier(consumerId)), efficiency);
                 }*/
