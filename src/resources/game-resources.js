@@ -101,10 +101,10 @@ class GameResources {
         if(rs.unlockCondition && !rs.unlockCondition()) return ;
         if(rs.isService) return ;
         const amtToAdd = rs.hasCap ? Math.min(amount, rs.cap - (rs.amount || 0) ) : amount;
-        rs.amount += amtToAdd;
         if(rs.amount < 0) {
             rs.amount = 0;
         }
+        rs.amount += amtToAdd;
         if(rs.modifier && amtToAdd !== 0) {
             rs.modifier.level = rs.amount;
             resourceCalculators.regenerateModifier(rs.modifier.id);
