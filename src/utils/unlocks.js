@@ -12,10 +12,11 @@ export class GameUnlocks {
         let left = 0;
         let right = unlocks.length - 1;
         let nextUnlock = null;
+        let nextLevelPos = currentLevel + 1;
 
         while (left <= right) {
             const mid = Math.floor((left + right) / 2);
-            if (unlocks[mid].level >= currentLevel) {
+            if (unlocks[mid].level >= nextLevelPos) {
                 nextUnlock = unlocks[mid];
                 right = mid - 1; // Search the left half
             } else {
