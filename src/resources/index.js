@@ -20,7 +20,7 @@ class ResourcesManager {
     tick(dT) {
         let isAssertsFinished = false;
         const start = performance.now();
-        console.log('iter started: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
+        // console.log('iter started: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
         gameResources.handleDelayed();
         let maxIter = 10;
         let iter = 0;
@@ -79,14 +79,14 @@ class ResourcesManager {
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            console.log('Toggling '+resourceId, newResourcesToUpdate, prUp);
+                            // console.log('Toggling '+resourceId, newResourcesToUpdate, prUp);
                             isAssertsFinished = false;
                         }
                     }
                     resourcesToUpdate = [...new Set(newResourcesToUpdate)];
                 }
             }
-            console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources['inventory_paper'])));
+            // console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources['inventory_paper'])));
             if(iter > maxIter) {
                 console.error('CRITICAL ERROR: not able to find resources divergence.', JSON.parse(JSON.stringify(gameResources.resources)));
                 isAssertsFinished = true;
@@ -105,7 +105,7 @@ class ResourcesManager {
         }
 
 
-        console.log('iter ended: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
+        // console.log('iter ended: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
 
         // console.log('END_UP: EntEEF', resourceModifiers.getModifier('entity_runningAction').efficiency);
 
