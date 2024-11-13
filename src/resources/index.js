@@ -45,6 +45,7 @@ class ResourcesManager {
                         gameResources.resources[resourceId].isMissing = true;
                         gameResources.resources[resourceId].amount = 0;
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing())
                         isAssertsFinished = false;
                     } else
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
@@ -56,6 +57,7 @@ class ResourcesManager {
                         gameResources.resources[resourceId].isMissing = true;
                         gameResources.resources[resourceId].amount = 0;
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing())
                         isAssertsFinished = false;
                     } else {
                         if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
@@ -79,16 +81,16 @@ class ResourcesManager {
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            console.log('Toggling '+resourceId, JSON.parse(JSON.stringify(newResourcesToUpdate)), prUp);
+                            console.log('Toggling '+resourceId, JSON.parse(JSON.stringify(newResourcesToUpdate)), prUp, gameResources.listMissing());
                             isAssertsFinished = false;
                         }
                     }
                     resourcesToUpdate = [...new Set(newResourcesToUpdate)];
                 }
             }
-            // console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources['inventory_paper'])));
+            // console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources)));
             if(iter > maxIter) {
-                console.error('CRITICAL ERROR: not able to find resources divergence.', JSON.parse(JSON.stringify(gameResources.resources)));
+                console.error('CRITICAL ERROR: not able to find resources divergence.', JSON.parse(JSON.stringify(gameResources.resources)), gameResources.listMissing());
                 isAssertsFinished = true;
             }
         }

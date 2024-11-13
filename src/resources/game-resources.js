@@ -54,6 +54,16 @@ class GameResources {
         return !this.resources[id].unlockCondition || this.resources[id].unlockCondition()
     }
 
+    listMissing() {
+        const result = {};
+        for(const key in this.resources) {
+            if(this.resources[key].targetEfficiency < 1) {
+                result[key] = this.resources[key].targetEfficiency;
+            }
+        }
+        return result;
+    }
+
 
     assertToCapOrEmpty(id) {
         const rs = this.getResource(id);
