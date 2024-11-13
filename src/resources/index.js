@@ -45,7 +45,7 @@ class ResourcesManager {
                         gameResources.resources[resourceId].isMissing = true;
                         gameResources.resources[resourceId].amount = 0;
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
-                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing())
+                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
@@ -57,7 +57,7 @@ class ResourcesManager {
                         gameResources.resources[resourceId].isMissing = true;
                         gameResources.resources[resourceId].amount = 0;
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
-                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing())
+                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else {
                         if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
@@ -74,6 +74,7 @@ class ResourcesManager {
                             // котрій ми шомно ресетнули
                             // Тобто, якщо ми ресетнули ефективність по ресурсу crafting_ability - перевіряємо усе що генерилося
                             // тим що консюмить resourceId, і докидуємо ссууудааа
+                            const prEff = gameResources.resources[resourceId].targetEfficiency;
                             const affected = resourceCalculators.resetConsumingEfficiency(resourceId, true);
                             gameResources.resources[resourceId].isMissing = false;
                             const prUp = [...newResourcesToUpdate];
@@ -81,7 +82,7 @@ class ResourcesManager {
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            console.log('Toggling '+resourceId, JSON.parse(JSON.stringify(newResourcesToUpdate)), prUp, gameResources.listMissing());
+                            console.log(`Iter${iter}: Toggling `+resourceId, JSON.parse(JSON.stringify(newResourcesToUpdate)), prEff, gameResources.listMissing());
                             isAssertsFinished = false;
                         }
                     }
