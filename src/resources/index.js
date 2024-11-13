@@ -79,7 +79,7 @@ class ResourcesManager {
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            // console.log('Toggling '+resourceId, newResourcesToUpdate, prUp);
+                            console.log('Toggling '+resourceId, JSON.parse(JSON.stringify(newResourcesToUpdate)), prUp);
                             isAssertsFinished = false;
                         }
                     }
