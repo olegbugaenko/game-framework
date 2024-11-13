@@ -452,7 +452,8 @@ class GameEntity {
                     name: basic_name,
                     value: val,
                     scope,
-                    type
+                    type,
+                    isPercentage: efft.isPercentage
                 };
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
                     continue;
