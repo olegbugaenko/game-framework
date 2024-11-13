@@ -16,6 +16,10 @@ export class Formulas {
         return formula.B + formula.A * x * Math.pow(formula.C, x);
     }
 
+    static calculateDiminish(formula, x) {
+        return formula.C + formula.A * formula.B * x * Math.pow(x, 0.5) / (formula.B + x);
+    }
+
     static calculateValue(formula, x) {
         if(formula.type === 0) {
             return Formulas.calculateLinearValue(formula, x)
@@ -25,6 +29,8 @@ export class Formulas {
             return Formulas.calculateConst(formula, x)
         } else if(formula.type === 3) {
             return Formulas.calculatePolyExponential(formula, x)
+        } else if(formula.type === 4) {
+            return Formulas.calculateDiminish(formula, x)
         } else {
             throw new Error('Invalid formula type: '+formula.type)
         }
