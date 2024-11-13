@@ -74,15 +74,17 @@ class ResourcesManager {
                             // котрій ми шомно ресетнули
                             // Тобто, якщо ми ресетнули ефективність по ресурсу crafting_ability - перевіряємо усе що генерилося
                             // тим що консюмить resourceId, і докидуємо ссууудааа
+                            const exceedFactor = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
                             const prEff = gameResources.resources[resourceId].targetEfficiency;
-                            const affected = resourceCalculators.resetConsumingEfficiency(resourceId, true);
-                            gameResources.resources[resourceId].isMissing = false;
+                            const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
+                            gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
+                            gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
                             const prUp = [...newResourcesToUpdate];
                             newResourcesToUpdate.push(resourceId);
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            console.log(`Iter${iter}: Toggling `+resourceId, JSON.parse(JSON.stringify(newResourcesToUpdate)), prEff, gameResources.listMissing());
+                            console.log(`Iter${iter}: Toggling `+resourceId, prEff, exceedFactor, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
                             isAssertsFinished = false;
                         }
                     }

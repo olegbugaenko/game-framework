@@ -577,7 +577,7 @@ class ResourceCalculators {
                 if(consumer.nIter > 8) {
                     return;
                 }
-                this.updateModifierEfficiency(consumer.id, consumer.efficiency * efficiency);
+                this.updateModifierEfficiency(consumer.id, Math.min(1, consumer.efficiency * efficiency));
                 if(consumer.bottleNeck && consumer.bottleNeck !== resourceId) {
                     affectedResourceIds.push(consumer.bottleNeck);
                 }
