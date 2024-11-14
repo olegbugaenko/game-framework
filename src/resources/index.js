@@ -74,8 +74,10 @@ class ResourcesManager {
                             // котрій ми шомно ресетнули
                             // Тобто, якщо ми ресетнули ефективність по ресурсу crafting_ability - перевіряємо усе що генерилося
                             // тим що консюмить resourceId, і докидуємо ссууудааа
-                            const exceedFactor = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
                             const prEff = gameResources.resources[resourceId].targetEfficiency;
+                            const exceedFactor = gameResources.resources[resourceId].consumption
+                                ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
+                                : 1/(SMALL_NUMBER + prEff);
                             const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
                             gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
                             gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
