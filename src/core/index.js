@@ -99,6 +99,7 @@ export class GameCore {
         obj.resources = gameResources.save();
         obj.globalTime = this.globalTime;
         obj.numTicks = this.numTicks;
+        obj.lastSave = Date.now();
         return obj;
     }
 
