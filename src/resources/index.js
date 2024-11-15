@@ -77,7 +77,7 @@ class ResourcesManager {
                             const prEff = gameResources.resources[resourceId].targetEfficiency;
                             const exceedFactor = gameResources.resources[resourceId].consumption
                                 ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
-                                : 1/(SMALL_NUMBER + prEff);
+                                : 1./(SMALL_NUMBER + prEff);
                             const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
                             gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
                             gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
@@ -86,7 +86,7 @@ class ResourcesManager {
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            console.log(`Iter${iter}: Toggling `+resourceId, prEff, exceedFactor, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
+                            console.log(`Iter${iter}: Toggling `+resourceId, prEff, 1./(SMALL_NUMBER + prEff), exceedFactor, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
                             isAssertsFinished = false;
                         }
                     }
