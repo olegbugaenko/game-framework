@@ -77,7 +77,7 @@ class ResourcesManager {
                             const prEff = gameResources.resources[resourceId].targetEfficiency;
                             const exceedFactor = gameResources.resources[resourceId].consumption
                                 ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
-                                : 1./(SMALL_NUMBER + prEff);
+                                : 1./Math.max(SMALL_NUMBER, prEff);
                             const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
                             gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
                             gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
