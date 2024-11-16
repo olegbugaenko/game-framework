@@ -56,6 +56,7 @@ export class GameCore {
     startTicking(interval, delta, cb, bDebug) {
         this.isTicking = true;
         this.ticker = setInterval(() => {
+            const currentDelta = typeof delta === 'function' ? delta() : delta;
             if(this.isInitialized) {
                 let ticks = {};
                 let start;
@@ -64,7 +65,7 @@ export class GameCore {
                     if(bDebug) {
                         start = performance.now();
                     }
-                    this.modules[key].tick(this, delta);
+                    this.modules[key].tick(this, currentDelta);
                     if(bDebug) {
                         const dt = performance.now() - start;
                         ticks[key] = dt;
@@ -74,15 +75,15 @@ export class GameCore {
                 if(bDebug) {
                     start = performance.now();
                 }
-                resourcesManager.tick(delta);
+                resourcesManager.tick(currentDelta);
                 if(bDebug) {
                     ticks['resourcesManager'] = performance.now() - start;
                     total += ticks['resourcesManager'];
                     console.log('TICKS: ', ticks, total);
                 }
-                cb(this, delta);
+                cb(this, currentDelta);
                 this.numTicks++;
-                this.globalTime += delta;
+                this.globalTime += currentDelta;
             }
         }, interval)
     }
