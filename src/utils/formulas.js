@@ -9,7 +9,7 @@ export class Formulas {
     }
 
     static calculateExponentialValue(formula, x) {
-        return formula.B*Math.pow(formula.A, x);
+        return formula.B*Math.pow(formula.A, x) + (formula.C || 0);
     }
 
     static calculatePolyExponential(formula, x) {
