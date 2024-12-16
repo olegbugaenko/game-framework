@@ -223,6 +223,9 @@ class GameResources {
     }
 
     load(obj) {
+        this.resources = {};
+        this.resourcesByTags = {};
+        this.delayedResets = {};
         for(const rsId in obj) {
             this.setResource(rsId, obj[rsId]);
         }
