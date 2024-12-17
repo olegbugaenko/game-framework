@@ -110,8 +110,8 @@ export class GameCore {
             this.modules[key].load(obj[key]);
         }
         gameResources.load(obj.resources || {});
-        this.numTicks = obj.numTicks;
-        this.globalTime = obj.globalTime;
+        this.numTicks = obj.numTicks || 0;
+        this.globalTime = obj.globalTime || 0;
     }
 
     getModule(id) {
