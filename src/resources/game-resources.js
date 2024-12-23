@@ -227,7 +227,9 @@ class GameResources {
             this.setResource(rsId, 0);
         }
         for(const rsId in obj) {
-            this.setResource(rsId, obj[rsId]);
+            if(this.resources[rsId]) {
+                this.setResource(rsId, obj[rsId]);
+            }
         }
         return obj;
     }
