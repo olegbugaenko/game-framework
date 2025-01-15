@@ -107,6 +107,9 @@ class GameResources {
     }
 
     addResource(id, amount, isDelayed = false) {
+        if(!amount) {
+            amount = 0;
+        }
         const rs = this.getResource(id);
         if(rs.unlockCondition && !rs.unlockCondition()) return ;
         if(rs.isService) return ;
@@ -139,7 +142,7 @@ class GameResources {
     setResource(id, amount, bPreventReset = false, delayedReset = false) {
         const rs = this.getResource(id);
         const pAmount = rs.amount;
-        rs.amount = amount;
+        rs.amount = amount || 0;
         if(rs.amount < 0) {
             rs.amount = 0;
         }
