@@ -33,14 +33,15 @@ class ResourceCalculators {
             if(rmod.getCustomAmplifier && rmod.customAmplifierApplyTypes.includes('resources')) {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
-            if (rmod.income?.effects?.[id]) {
+            if (rmod.income?.resources?.[id]) {
                 const inc = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
                 if(inc != null && inc > SMALL_NUMBER) {
 
                     modifiersBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
-                        value: inc
+                        value: inc,
+                        label: rmod.income?.resources?.[id]?.label ?? rmod.name,
                     })
                     modifiersBreakdown.modifiers++;
                 }
@@ -64,7 +65,8 @@ class ResourceCalculators {
                 modifiersBreakdown.multiplier.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.multiplier?.resources?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
             }
@@ -87,7 +89,8 @@ class ResourceCalculators {
                 modifiersBreakdown.consumption.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.consumption?.resources?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
 
@@ -110,7 +113,8 @@ class ResourceCalculators {
                 modifiersBreakdown.rawCap.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.rawCap?.resources?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
             }
@@ -134,7 +138,8 @@ class ResourceCalculators {
                 modifiersBreakdown.capMult.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.capMult?.resources?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
             }
@@ -184,7 +189,8 @@ class ResourceCalculators {
                     modifiersBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt * rmod.efficiency * intensityMultiplier
+                        value: amt * rmod.efficiency * intensityMultiplier,
+                        label: rmod.income?.resources?.[id]?.label ?? rmod.name,
                     })
                 }
 
@@ -209,7 +215,8 @@ class ResourceCalculators {
                     modifiersBreakdown.multiplier.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt
+                        value: amt,
+                        label: rmod.multiplier?.resources?.[id]?.label ?? rmod.name,
                     })
                 }
 
@@ -235,7 +242,8 @@ class ResourceCalculators {
                     modifiersBreakdown.consumption.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt * relevantEfficiency * intensityMultiplier
+                        value: amt * relevantEfficiency * intensityMultiplier,
+                        label: rmod.consumption?.resources?.[id]?.label ?? rmod.name,
                     })
                 }
 
@@ -261,7 +269,8 @@ class ResourceCalculators {
                     storageBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt
+                        value: amt,
+                        label: rmod.rawCap?.resources?.[id]?.label ?? rmod.name,
                     })
                 }
 
@@ -287,7 +296,8 @@ class ResourceCalculators {
                     storageBreakdown.multiplier.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt
+                        value: amt,
+                        label: rmod.capMult?.resources?.[id]?.label ?? rmod.name,
                     })
                 }
             }
@@ -346,7 +356,8 @@ class ResourceCalculators {
                     modifiersBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt
+                        value: amt,
+                        label: rmod.income?.effects?.[id]?.label ?? rmod.name,
                     })
                     modifiersBreakdown.modifiers++;
                 }
@@ -370,7 +381,8 @@ class ResourceCalculators {
                 modifiersBreakdown.multiplier.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.multiplier?.effects?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
             }
@@ -393,7 +405,8 @@ class ResourceCalculators {
                 modifiersBreakdown.consumption.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.consumption?.effects?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
 
@@ -416,7 +429,8 @@ class ResourceCalculators {
                 modifiersBreakdown.rawCap.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.rawCap?.effects?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
             }
@@ -440,7 +454,8 @@ class ResourceCalculators {
                 modifiersBreakdown.capMult.push({
                     id: mod,
                     name: rmod.name,
-                    value: amt
+                    value: amt,
+                    label: rmod.capMult?.effects?.[id]?.label ?? rmod.name,
                 })
                 modifiersBreakdown.modifiers++;
             }
