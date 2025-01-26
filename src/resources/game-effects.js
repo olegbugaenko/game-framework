@@ -22,6 +22,7 @@ class GameEffects {
         effect.rawCap = effect.rawCap ?? 0;
         effect.capMult = effect.capMult ?? 0;
         effect.tags = effect.tags ?? [];
+        effect.id = id;
         this.effects[id] = effect;
 
         if(effect.minValue !== null) {
