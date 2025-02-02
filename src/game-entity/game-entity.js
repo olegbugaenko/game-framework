@@ -12,6 +12,7 @@ class GameEntity {
         GameEntity.instance = this;
         this.entities = {};
         this.entitiesByTags = {};
+        this.satellitesMap = {};
 
         // this.entitiesByDeps = {};
     }
@@ -27,6 +28,10 @@ class GameEntity {
                 isAbstract: false,
                 ...entity,
             }
+        }
+
+        if(entity.satelliteEntityId) {
+            this.satellitesMap[entity.satelliteEntityId] = entity.id;
         }
 
         if(!entity.level) {
@@ -363,6 +368,9 @@ class GameEntity {
         current.level = level;
         if(current.onLevelSet) {
             current.onLevelSet(current.level, pLev)
+        }
+        if(current.satelliteEntityId) {
+            this.setEntityLevel(current.satelliteEntityId, current.level, true);
         }
         return current;
     }
