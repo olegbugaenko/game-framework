@@ -1,3 +1,5 @@
+import {SMALL_NUMBER} from "../../dist/utils/consts";
+
 export class GameUnlocks {
 
     constructor() {
@@ -12,7 +14,7 @@ export class GameUnlocks {
         let left = 0;
         let right = unlocks.length - 1;
         let nextUnlock = null;
-        let nextLevelPos = currentLevel + 1;
+        let nextLevelPos = currentLevel + SMALL_NUMBER;
 
         while (left <= right) {
             const mid = Math.floor((left + right) / 2);
