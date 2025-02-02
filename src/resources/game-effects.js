@@ -131,7 +131,7 @@ class GameEffects {
 
         if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
 
-        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['effect'][id], effect);
+        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['effect'][id], effect, id === 'attribute_patience');
     }
 
     isEffectUnlocked(id) {

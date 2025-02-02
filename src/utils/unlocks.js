@@ -8,7 +8,7 @@ export class GameUnlocks {
         };
     }
 
-    findNextUnlock(unlocks, currentLevel) {
+    findNextUnlock(unlocks, currentLevel, doLog = false) {
         let left = 0;
         let right = unlocks.length - 1;
         let nextUnlock = null;
@@ -16,6 +16,10 @@ export class GameUnlocks {
 
         while (left <= right) {
             const mid = Math.floor((left + right) / 2);
+            if(doLog) {
+                console.log('[BinSrch]: Attempt to find with boundaries: ', left, right, mid)
+                console.log('[BinSrch]: POS: ', `Mid value = ${unlocks[mid].level} compared to ${nextLevelPos}`)
+            }
             if (unlocks[mid].level >= nextLevelPos) {
                 nextUnlock = unlocks[mid];
                 right = mid - 1; // Search the left half
