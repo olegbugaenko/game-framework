@@ -132,7 +132,7 @@ class GameEntity {
         return this.getEntity(id).modifier ? this.getEntity(id).modifier.efficiency : 1
     }
 
-    listEntitiesByTags(tags, isOr = false, excludeIds = []) {
+    listEntitiesByTags(tags, isOr = false, excludeIds = [], options = {}) {
         let suitableIds = []
         if(isOr) {
             suitableIds = tags.reduce((acc, tag) => [...acc, ...(this.entitiesByTags[tag] || [])], []);
@@ -150,7 +150,8 @@ class GameEntity {
             isUnlocked: this.isEntityUnlocked(id),
             isCapped: this.isCapped(id),
             efficiency: this.getEntityEfficiency(id),
-            nextUnlock: this.getNextEntityUnlock(id)
+            nextUnlock: this.getNextEntityUnlock(id),
+            prevUnlocks: options.listPrevious ? this.listPrevUnlocks(id) : null
         }));
     }
 
@@ -186,6 +187,14 @@ class GameEntity {
         if(!gameUnlocks.unlockMapping['entity']?.[id]) return null;
 
         return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['entity'][id], entity.level);
+    }
+
+    listPrevUnlocks(id) {
+        const entity = this.getEntity(id);
+
+        if(!gameUnlocks.unlockMapping['entity']?.[id]) return null;
+
+        return gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['entity'][id], entity.level);
     }
 
     fetchAllUnlocks() {
