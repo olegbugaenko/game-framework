@@ -105,7 +105,15 @@ class GameEffects {
         return rs.breakDown || {};
     }
 
-    listEffectsByTags(tags, isOr = false, excludeIds = []) {
+    listPrevUnlocks(id) {
+        const effect = this.getEffect(id);
+
+        if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
+
+        return gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['effect'][id], effect.value);
+    }
+
+    listEffectsByTags(tags, isOr = false, excludeIds = [], options = {}) {
         let suitableIds = []
         if(isOr) {
             suitableIds = tags.reduce((acc, tag) => [...acc, ...(this.effectsByTags[tag] || [])], []);
@@ -118,11 +126,13 @@ class GameEffects {
         if(excludeIds && excludeIds.length) {
             suitableIds = suitableIds.filter(id => !excludeIds.includes(id))
         }
+
         return suitableIds.map(id => ({
             id,
             ...this.effects[id],
             isUnlocked: !this.effects[id].unlockCondition || this.effects[id].unlockCondition(),
-            nextUnlock: this.getNextEffectUnlock(id)
+            nextUnlock: this.getNextEffectUnlock(id),
+            prevUnlocks: options.listPrevious ? this.listPrevUnlocks(id) : null
         }));
     }
 
