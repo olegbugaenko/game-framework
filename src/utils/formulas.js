@@ -31,7 +31,7 @@ export class Formulas {
     }
 
     static calculateDiminish(formula, x) {
-        let val = formula.C + formula.A * formula.B * x * Math.pow(x, 0.25) / (formula.B + x);
+        let val = formula.C + formula.A * formula.B * x * Math.pow(x, formula.diminish ?? 0.25) / (formula.B + x);
         return this.applyMinMax(val, formula);
     }
 
