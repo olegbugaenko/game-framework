@@ -38,6 +38,10 @@ export class GameUnlocks {
         let right = unlocks.length - 1;
         let lastUnlockedIndex = -1;
 
+        if(doLog) {
+            console.log('[BinSrch]: Arr: ', unlocks);
+        }
+
         while (left <= right) {
             const mid = Math.floor((left + right) / 2);
             if (doLog) {

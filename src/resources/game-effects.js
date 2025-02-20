@@ -110,7 +110,7 @@ class GameEffects {
 
         if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
 
-        return gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['effect'][id], effect.value);
+        return gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['effect'][id], effect.value, id === 'attribute_magic_ability');
     }
 
     listEffectsByTags(tags, isOr = false, excludeIds = [], options = {}) {
@@ -141,7 +141,7 @@ class GameEffects {
 
         if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
 
-        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['effect'][id], effect, id === 'attribute_patience');
+        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['effect'][id], effect);
     }
 
     isEffectUnlocked(id) {
