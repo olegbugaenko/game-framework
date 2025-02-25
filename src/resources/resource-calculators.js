@@ -524,7 +524,7 @@ class ResourceCalculators {
             //TODO: if missing resources are present in deps - we need to reset those
             deps.effects.forEach(effId => {
                 this.assertEffect(effId);
-                console.log('Reasserted: ', effId);
+                // console.log('Reasserted: ', effId);
             });
         }
     }
@@ -568,7 +568,7 @@ class ResourceCalculators {
             //TODO: if missing resources are present in deps - we need to reset those
             deps.effects.forEach(effId => {
                 this.assertEffect(effId);
-                console.log('Reasserted: ', effId);
+                // console.log('Reasserted: ', effId);
             });
         }
     }
