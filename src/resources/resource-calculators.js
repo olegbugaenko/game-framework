@@ -508,9 +508,9 @@ class ResourceCalculators {
 
     regenerateModifier(id, preserveEfficiency = false) {
         const deps = resourceModifiers.getDependenciesToRegenerate(id);
-        if(!preserveEfficiency) {
+        /*if(!preserveEfficiency) {
             console.log('regeneratingModifier: ', id, deps.effects, preserveEfficiency);
-        }
+        }*/
         if(deps.resources.length) {
             //TODO: if missing resources are present in deps - we need to reset those
             deps.resources.forEach(rs => {
