@@ -497,7 +497,7 @@ class ResourceCalculators {
         }
         const currValue = gameEffects.getEffectValue(id);
         if(prevValue !== currValue) {
-            console.log(`Effect ${id} changed from ${prevValue} -> ${currValue}`, resourceModifiers.modifiersGroupped.byDeps);
+            // console.log(`Effect ${id} changed from ${prevValue} -> ${currValue}`, resourceModifiers.modifiersGroupped.byDeps);
             resourceModifiers.modifiersGroupped.byDeps[id]?.forEach(modifierId => {
                 resourceModifiers.cacheModifier(modifierId); // regenerate caches
                 this.regenerateModifier(modifierId, true)
@@ -599,9 +599,9 @@ class ResourceCalculators {
                 if(efficiency < 1) {
                     consumer.bottleNeck = resourceId;
                 }
-                if(resourceId === 'crafting_ability' || resourceId === 'inventory_paper' || resourceId === 'inventory_enchanted_paper') {
+                /*if(resourceId === 'crafting_ability' || resourceId === 'inventory_paper' || resourceId === 'inventory_enchanted_paper') {
                     console.log('Consumers of '+resourceId, consumer.id, consumer.efficiency, efficiency, JSON.parse(JSON.stringify(affectedResourceIds)), consumer.nIter);
-                }
+                }*/
                 /*if(consumerId === 'entity_runningAction') {
                     console.log('AfterUpd EntEEF: ', JSON.stringify(resourceModifiers.getModifier(consumerId)), efficiency);
                 }*/
