@@ -145,6 +145,11 @@ class GameEntity {
         if(excludeIds && excludeIds.length) {
             suitableIds = suitableIds.filter(id => !excludeIds.includes(id))
         }
+
+        if(options.bRawData) {
+            return suitableIds.map(id => this.entities[id]);
+        }
+
         return suitableIds.map(id => ({
             ...this.getEntity(id),
             isUnlocked: this.isEntityUnlocked(id),
