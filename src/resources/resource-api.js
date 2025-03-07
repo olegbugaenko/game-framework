@@ -87,6 +87,64 @@ export class ResourceApi {
         return result;
     }
 
+    mergeEffects(base, additional) {
+        const mergeValues = (baseVal, addVal, isMultiplicative = false) => {
+            if (isMultiplicative) {
+                return baseVal * addVal;
+            }
+            return baseVal + addVal;
+        };
+
+        const mergeScopes = (baseScope, addScope, isMultiplicative) => {
+            for (const key in addScope) {
+                if (!baseScope[key]) {
+                    baseScope[key] = { ...addScope[key] };
+                } else {
+                    baseScope[key].value = mergeValues(baseScope[key].value, addScope[key].value, isMultiplicative);
+                }
+            }
+        };
+
+        const mergeCategories = (baseCategory, addCategory) => {
+            mergeScopes(baseCategory.income, addCategory.income, false);
+            mergeScopes(baseCategory.multiplier, addCategory.multiplier, true);
+            mergeScopes(baseCategory.consumption, addCategory.consumption, false);
+            mergeScopes(baseCategory.rawCap, addCategory.rawCap, false);
+            mergeScopes(baseCategory.capMult, addCategory.capMult, true);
+        };
+
+        mergeCategories(base.resources, additional.resources);
+        mergeCategories(base.effects, additional.effects);
+
+        return base;
+    }
+
+    unpackEffectsToArray(effectsStructured) {
+        const result = [];
+
+        const unpackScope = (scopeData, scope, type) => {
+            for (const key in scopeData) {
+                const effect = scopeData[key];
+                result.push({
+                    id: key,
+                    name: effect.name,
+                    value: effect.value,
+                    scope,
+                    type,
+                    isPercentage: effect.isPercentage
+                });
+            }
+        };
+
+        ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'].forEach(scope => {
+            unpackScope(effectsStructured.resources[scope], scope, 'resources');
+            unpackScope(effectsStructured.effects[scope], scope, 'effects');
+        });
+
+        return result;
+    }
+
+
 }
 
 export const resourceApi = ResourceApi.instance || new ResourceApi();

@@ -543,6 +543,100 @@ class GameEntity {
         return result;
     }
 
+    getEffectsStructured(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1, customEfficiency = 1) {
+        const result = {
+            resources: {
+                income: {},
+                multiplier: {},
+                consumption: {},
+                rawCap: {},
+                capMult: {}
+            },
+            effects: {
+                income: {},
+                multiplier: {},
+                consumption: {},
+                rawCap: {},
+                capMult: {}
+            }
+        };
+
+        const entity = this.entities[id];
+
+        if (lvl == null) {
+            lvl = entity.level;
+        }
+
+        const unpack = (object, type, scope, intensityMultiplier = 1.) => {
+            if (!object?.[scope]?.[type]) return {};
+            const toUnpack = object?.[scope]?.[type];
+            const results = {};
+
+            for (const key in toUnpack) {
+                const formula = toUnpack[key];
+                const efft = type === 'resources' ? gameResources.getResource(key) : gameEffects.getEffect(key);
+
+                if (efft.unlockCondition && !efft.unlockCondition()) {
+                    continue;
+                }
+
+                let lvlToCalc = lvl + addLvl;
+                let customMultiplierLocal = customMultiplier;
+                let val = customMultiplierLocal * Formulas.calculateValue(formula, lvlToCalc);
+
+                if (scope === 'multiplier' || scope === 'capMult') {
+                    val = 1 + (val - 1) * customEfficiency * intensityMultiplier;
+                } else {
+                    val = val * customEfficiency * intensityMultiplier;
+                }
+
+                if (val == null || Math.abs(val) < SMALL_NUMBER) continue;
+                if ((scope === 'multiplier' || scope === 'capMult') && (Math.abs(val - 1) < SMALL_NUMBER)) continue;
+
+                results[key] = {
+                    id: key,
+                    name: efft.name,
+                    value: val,
+                    scope,
+                    type,
+                    isPercentage: efft.isPercentage
+                };
+            }
+
+            return results;
+        };
+
+        let modif = entity.modifier;
+        if (entity.isAbstract && calculateForAbstract) {
+            modif = entity.resourceModifier;
+
+            if (modif) {
+                ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'].forEach(scope => {
+                    if (modif[`get_${scope}`]) {
+                        modif[scope] = modif[`get_${scope}`]();
+                    }
+                });
+            }
+        }
+
+        if (!modif) {
+            return result;
+        }
+
+        let intensityMultiplier = 1.;
+        if (modif.getCustomAmplifier) {
+            intensityMultiplier = modif.getCustomAmplifier();
+        }
+
+        ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'].forEach(scope => {
+            result.resources[scope] = unpack(modif, 'resources', scope, intensityMultiplier);
+            result.effects[scope] = unpack(modif, 'effects', scope, intensityMultiplier);
+        });
+
+        return result;
+    }
+
+
     getAttributes(id) {
         const entity = this.getEntity(id);
         if(entity.get_attributes) {
