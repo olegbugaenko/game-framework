@@ -96,6 +96,9 @@ export class ResourceApi {
         };
 
         const mergeScopes = (baseScope, addScope, isMultiplicative) => {
+            if (!baseScope) {
+                return { ...addScope }; // Якщо у baseScope немає ключів, просто копіюємо addScope
+            }
             for (const key in addScope) {
                 if (!baseScope[key]) {
                     baseScope[key] = { ...addScope[key] };
@@ -103,21 +106,27 @@ export class ResourceApi {
                     baseScope[key].value = mergeValues(baseScope[key].value, addScope[key].value, isMultiplicative);
                 }
             }
+            return baseScope;
         };
 
         const mergeCategories = (baseCategory, addCategory) => {
-            mergeScopes(baseCategory.income, addCategory.income, false);
-            mergeScopes(baseCategory.multiplier, addCategory.multiplier, true);
-            mergeScopes(baseCategory.consumption, addCategory.consumption, false);
-            mergeScopes(baseCategory.rawCap, addCategory.rawCap, false);
-            mergeScopes(baseCategory.capMult, addCategory.capMult, true);
+            if (!baseCategory) {
+                return { ...addCategory }; // Якщо у baseCategory немає ключів, просто копіюємо addCategory
+            }
+            baseCategory.income = mergeScopes(baseCategory.income || {}, addCategory.income || {}, false);
+            baseCategory.multiplier = mergeScopes(baseCategory.multiplier || {}, addCategory.multiplier || {}, true);
+            baseCategory.consumption = mergeScopes(baseCategory.consumption || {}, addCategory.consumption || {}, false);
+            baseCategory.rawCap = mergeScopes(baseCategory.rawCap || {}, addCategory.rawCap || {}, false);
+            baseCategory.capMult = mergeScopes(baseCategory.capMult || {}, addCategory.capMult || {}, true);
+            return baseCategory;
         };
 
-        mergeCategories(base.resources, additional.resources);
-        mergeCategories(base.effects, additional.effects);
+        base.resources = mergeCategories(base.resources || {}, additional.resources || {});
+        base.effects = mergeCategories(base.effects || {}, additional.effects || {});
 
         return base;
     }
+
 
     unpackEffectsToArray(effectsStructured) {
         const result = [];
