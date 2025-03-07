@@ -153,6 +153,32 @@ export class ResourceApi {
         return result;
     }
 
+    unpackEffectsToObject(effectsStructured) {
+        const result = {};
+
+        const unpackScope = (scopeData, scope, type) => {
+            for (const key in scopeData) {
+                const effect = scopeData[key];
+                const nKey = `${scope}_${type}_${key}`
+                result[nKey] ={
+                    id: key,
+                    name: effect.name,
+                    value: effect.value,
+                    scope,
+                    type,
+                    isPercentage: effect.isPercentage
+                };
+            }
+        };
+
+        ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'].forEach(scope => {
+            unpackScope(effectsStructured.resources[scope], scope, 'resources');
+            unpackScope(effectsStructured.effects[scope], scope, 'effects');
+        });
+
+        return result;
+    }
+
 
 }
 
