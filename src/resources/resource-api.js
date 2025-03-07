@@ -171,9 +171,9 @@ export class ResourceApi {
             }
         };
 
-        ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'].forEach(scope => {
-            unpackScope(effectsStructured.resources[scope], scope, 'resources');
-            unpackScope(effectsStructured.effects[scope], scope, 'effects');
+        ['income', 'multiplier', 'rawCap', 'capMult', 'consumption'].forEach(scope => {
+            unpackScope(effectsStructured.resources?.[scope] || {}, scope, 'resources');
+            unpackScope(effectsStructured.effects?.[scope] || {}, scope, 'effects');
         });
 
         return result;
