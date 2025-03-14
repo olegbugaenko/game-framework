@@ -9,6 +9,7 @@ export class GameUnlocks {
             effect: {}
         };
     }
+
     findNextUnlock(unlocks, currentLevel, doLog = false) {
         let left = 0;
         let right = unlocks.length - 1;
@@ -22,7 +23,7 @@ export class GameUnlocks {
                 console.log('[BinSrch]: Attempt to find with boundaries: ', left, right, mid);
                 console.log('[BinSrch]: POS: ', `Mid value = ${unlocks[mid].level} compared to ${nextLevelPos}`);
             }
-            if (unlocks[mid].level >= nextLevelPos) {
+            if (unlocks[mid].level > nextLevelPos) {
                 nextUnlock = unlocks[mid];
                 firstIndex = mid; // Зберігаємо індекс
                 right = mid - 1; // Продовжуємо пошук ліворуч
