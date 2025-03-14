@@ -1,6 +1,6 @@
 import {gameUnlocks} from "../utils/unlocks";
 import {gameEffects} from "../resources";
-import {gameEntity} from "../../dist/game-entity";
+import {gameEntity} from "../game-entity";
 
 export class UnlocksApi {
 
