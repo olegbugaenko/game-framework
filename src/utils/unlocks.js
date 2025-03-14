@@ -1,4 +1,3 @@
-import {SMALL_NUMBER} from "./consts";
 
 export class GameUnlocks {
 
