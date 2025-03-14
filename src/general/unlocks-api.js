@@ -18,7 +18,7 @@ export class UnlocksApi {
 
             for (const unlockerId in arr) {
                 total += arr[unlockerId].length;
-                const cL = scope === 'effects' ? gameEffects.getEffectValue(unlockerId) : gameEntity.getLevel(unlockerId);
+                const cL = scope === 'effect' ? gameEffects.getEffectValue(unlockerId) : gameEntity.getLevel(unlockerId);
                 totalCompleted += gameUnlocks.findNextUnlock(arr, cL)
                 //this.unlockMapping[scope][unlockerId].sort((a, b) => a.level - b.level);
             }
