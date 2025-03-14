@@ -155,7 +155,7 @@ class GameEntity {
             isUnlocked: this.isEntityUnlocked(id),
             isCapped: this.isCapped(id),
             efficiency: this.getEntityEfficiency(id),
-            nextUnlock: this.getNextEntityUnlock(id),
+            nextUnlocks: this.getNextEntityUnlock(id),
             prevUnlocks: options.listPrevious ? this.listPrevUnlocks(id) : null
         }));
     }
@@ -191,7 +191,7 @@ class GameEntity {
 
         if(!gameUnlocks.unlockMapping['entity']?.[id]) return null;
 
-        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['entity'][id], entity.level);
+        return gameUnlocks.findNextUnlocksArray(gameUnlocks.unlockMapping['entity'][id], entity.level);
     }
 
     listPrevUnlocks(id) {

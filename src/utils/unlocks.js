@@ -9,29 +9,56 @@ export class GameUnlocks {
             effect: {}
         };
     }
-
     findNextUnlock(unlocks, currentLevel, doLog = false) {
         let left = 0;
         let right = unlocks.length - 1;
         let nextUnlock = null;
-        let nextLevelPos = currentLevel + SMALL_NUMBER;
+        let nextLevelPos = currentLevel + Number.EPSILON;
+        let firstIndex = -1;
 
         while (left <= right) {
             const mid = Math.floor((left + right) / 2);
-            if(doLog) {
-                console.log('[BinSrch]: Attempt to find with boundaries: ', left, right, mid)
-                console.log('[BinSrch]: POS: ', `Mid value = ${unlocks[mid].level} compared to ${nextLevelPos}`)
+            if (doLog) {
+                console.log('[BinSrch]: Attempt to find with boundaries: ', left, right, mid);
+                console.log('[BinSrch]: POS: ', `Mid value = ${unlocks[mid].level} compared to ${nextLevelPos}`);
             }
             if (unlocks[mid].level >= nextLevelPos) {
                 nextUnlock = unlocks[mid];
-                right = mid - 1; // Search the left half
+                firstIndex = mid; // Зберігаємо індекс
+                right = mid - 1; // Продовжуємо пошук ліворуч
             } else {
-                left = mid + 1; // Search the right half
+                left = mid + 1;
             }
         }
 
-        return nextUnlock;
+        return firstIndex !== -1 ? { unlock: nextUnlock, index: firstIndex } : null;
     }
+
+    findNextUnlocksArray(unlocks, currentLevel, doLog = false) {
+        const foundItem = this.findNextUnlock(unlocks, currentLevel, doLog);
+
+        if (!foundItem) return [];
+
+        const { unlock, index } = foundItem;
+        let allUnlocks = [unlock];
+
+        // Проходимо ліворуч, доки рівень однаковий
+        let lowerBoundary = index - 1;
+        while (lowerBoundary >= 0 && unlocks[lowerBoundary].level === unlock.level) {
+            allUnlocks.unshift(unlocks[lowerBoundary]); // додаємо на початок
+            lowerBoundary--;
+        }
+
+        // Проходимо праворуч, доки рівень однаковий
+        let upperBoundary = index + 1;
+        while (upperBoundary < unlocks.length && unlocks[upperBoundary].level === unlock.level) {
+            allUnlocks.push(unlocks[upperBoundary]); // додаємо в кінець
+            upperBoundary++;
+        }
+
+        return allUnlocks;
+    }
+
 
     getPreviousUnlocks(unlocks, currentLevel, doLog = false) {
         let left = 0;

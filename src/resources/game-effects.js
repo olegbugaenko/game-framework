@@ -131,7 +131,7 @@ class GameEffects {
             id,
             ...this.effects[id],
             isUnlocked: !this.effects[id].unlockCondition || this.effects[id].unlockCondition(),
-            nextUnlock: this.getNextEffectUnlock(id),
+            nextUnlocks: this.getNextEffectUnlock(id),
             prevUnlocks: options.listPrevious ? this.listPrevUnlocks(id) : null
         }));
     }
@@ -141,7 +141,7 @@ class GameEffects {
 
         if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
 
-        return gameUnlocks.findNextUnlock(gameUnlocks.unlockMapping['effect'][id], effect);
+        return gameUnlocks.findNextUnlocksArray(gameUnlocks.unlockMapping['effect'][id], effect);
     }
 
     isEffectUnlocked(id) {
