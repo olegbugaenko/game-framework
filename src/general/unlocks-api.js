@@ -1,5 +1,6 @@
 import {gameUnlocks} from "../utils/unlocks";
-import {gameEffects, gameResources} from "../resources";
+import {gameEffects} from "../resources";
+import {gameEntity} from "../../dist/game-entity";
 
 export class UnlocksApi {
 
@@ -17,7 +18,7 @@ export class UnlocksApi {
 
             for (const unlockerId in arr) {
                 total += arr[unlockerId].length;
-                const cL = scope === 'effects' ? gameEffects.getEffectValue(unlockerId) : gameResources.getResource(unlockerId).amount;
+                const cL = scope === 'effects' ? gameEffects.getEffectValue(unlockerId) : gameEntity.getLevel(unlockerId);
                 totalCompleted += gameUnlocks.findNextUnlock(arr, cL)
                 //this.unlockMapping[scope][unlockerId].sort((a, b) => a.level - b.level);
             }
