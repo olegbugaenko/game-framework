@@ -446,6 +446,7 @@ class GameEntity {
             for(const key in toUnpack) {
                 const formula = toUnpack[key];
                 const efft = type === 'resources' ? gameResources.getResource(key) : gameEffects.getEffect(key);
+                const balance = efft?.balance != null ? efft?.balance : undefined;
                 if(efft.unlockCondition) {
                     if(!efft.unlockCondition()) {
                         continue;
@@ -475,7 +476,8 @@ class GameEntity {
                     value: val,
                     scope,
                     type,
-                    isPercentage: efft.isPercentage
+                    isPercentage: efft.isPercentage,
+                    balance
                 };
                 if(item.value == null || Math.abs(item.value) < SMALL_NUMBER) {
                     continue;
@@ -580,6 +582,7 @@ class GameEntity {
             for (const key in toUnpack) {
                 const formula = toUnpack[key];
                 const efft = type === 'resources' ? gameResources.getResource(key) : gameEffects.getEffect(key);
+                const balance = efft?.balance != null ? efft?.balance : undefined;
 
                 if (efft.unlockCondition && !efft.unlockCondition()) {
                     continue;
@@ -604,7 +607,8 @@ class GameEntity {
                     value: val,
                     scope,
                     type,
-                    isPercentage: efft.isPercentage
+                    isPercentage: efft.isPercentage,
+                    balance
                 };
             }
 
