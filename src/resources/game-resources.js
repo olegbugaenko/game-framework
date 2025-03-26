@@ -94,6 +94,14 @@ class GameResources {
         }));
     }
 
+    listAllResources() {
+        return Object.entries(this.resources).map(([id, resource]) => ({
+            id,
+            ...resource,
+            isUnlocked: !this.resources[id].unlockCondition || this.resources[id].unlockCondition()
+        }))
+    }
+
     assertBalance(id) {
         const rs = this.getResource(id);
         rs.balance = rs.income*rs.multiplier - rs.consumption;
