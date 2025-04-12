@@ -148,7 +148,7 @@ class ResourceCalculators {
         return modifiersBreakdown;
     }
 
-    assertResource(id, doUpdate = true, skipByTags = []) {
+    assertResource(id, doUpdate = true, skipByTags = [], options = {}) {
         // now we walking through all the modifiers
         let income = 0;
         let multiplier = 1;
@@ -157,6 +157,11 @@ class ResourceCalculators {
         let capMult = 1;
         let effectIncome = 0;
         let effectMultiplier = 1;
+
+        const getRelevantEfficiency = rmodEff => {
+            if(options.targetEfficiency == null) return rmodEff;
+            return options.targetEfficiency;
+        }
 
         const modifiersBreakdown = {
             income: [],
@@ -175,7 +180,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if (rmod.efficiency === 0) {
+            if (getRelevantEfficiency(rmod.efficiency) === 0) {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
@@ -185,11 +190,11 @@ class ResourceCalculators {
             if (rmod.income?.resources?.[id]) {
                 const amt = Formulas.calculateValue(rmod.income?.resources?.[id], rmod.level);
                 if(amt != null && Math.abs(amt) > SMALL_NUMBER) {
-                    income += amt * rmod.efficiency * intensityMultiplier;
+                    income += amt * getRelevantEfficiency(rmod.efficiency) * intensityMultiplier;
                     modifiersBreakdown.income.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt * rmod.efficiency * intensityMultiplier,
+                        value: amt * getRelevantEfficiency(rmod.efficiency) * intensityMultiplier,
                         label: rmod.income?.resources?.[id]?.label ?? rmod.name,
                     })
                 }
@@ -201,7 +206,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if (rmod.efficiency === 0) {
+            if (getRelevantEfficiency(rmod.efficiency) === 0) {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
@@ -209,7 +214,7 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.multiplier?.resources?.[id]) {
-                const amt = Formulas.calculateValue(rmod.multiplier?.resources?.[id], rmod.level * rmod.efficiency * intensityMultiplier);
+                const amt = Formulas.calculateValue(rmod.multiplier?.resources?.[id], rmod.level * getRelevantEfficiency(rmod.efficiency) * intensityMultiplier);
                 multiplier *= amt;
                 if(Math.abs(amt - 1) > SMALL_NUMBER) {
                     modifiersBreakdown.multiplier.push({
@@ -233,7 +238,7 @@ class ResourceCalculators {
             }
             if (rmod.consumption?.resources?.[id]) {
                 const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level);
-                const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 :  getRelevantEfficiency(rmod.efficiency);
                 if (relevantEfficiency === 0) {
                     return;
                 }
@@ -254,7 +259,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if (rmod.efficiency === 0) {
+            if (getRelevantEfficiency(rmod.efficiency) === 0) {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
@@ -262,7 +267,7 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.rawCap?.resources?.[id]) {
-                const amt = Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * rmod.efficiency * intensityMultiplier;
+                const amt = Formulas.calculateValue(rmod.rawCap?.resources?.[id], rmod.level) * getRelevantEfficiency(rmod.efficiency) * intensityMultiplier;
 
                 rawCap += amt;
                 if(amt > SMALL_NUMBER) {
@@ -281,7 +286,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if (rmod.efficiency === 0) {
+            if (getRelevantEfficiency(rmod.efficiency) === 0) {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
@@ -289,7 +294,7 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if(rmod.capMult?.resources?.[id]) {
-                const amt = Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*rmod.efficiency*intensityMultiplier);
+                const amt = Formulas.calculateValue(rmod.capMult?.resources?.[id], rmod.level*getRelevantEfficiency(rmod.efficiency)*intensityMultiplier);
                 capMult *= amt;
 
                 if(Math.abs(amt - 1) > SMALL_NUMBER) {
