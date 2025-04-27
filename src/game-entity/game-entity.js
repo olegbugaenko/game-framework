@@ -397,6 +397,7 @@ class GameEntity {
     }
 
     getLevel(id) {
+        if(!this.entityExists(id)) return 0;
         return this.getEntity(id).level;
     }
 
