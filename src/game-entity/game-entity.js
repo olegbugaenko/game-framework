@@ -22,6 +22,7 @@ class GameEntity {
         if(this.entities[id]) {
             this.unsetEntity(id);
         }
+        console.log(`gameCore.demoVersion = ${gameCore.demoVersion}; ${entity.minDemoVersion}`);
         if(gameCore.demoVersion && entity.minDemoVersion) {
             if(entity.minDemoVersion > gameCore.demoVersion) {
                 return ; // dont register anything requiring higher demo version
