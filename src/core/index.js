@@ -11,6 +11,7 @@ export class GameCore {
         this.globalTime = 0;
         this.numTicks = 0;
         this.pid = Math.random();
+        this.demoVersion = undefined;
         GameCore.instance = this;
     }
 
@@ -40,7 +41,11 @@ export class GameCore {
         return this.modules[id];
     }
 
-    initialize(cb) {
+    initialize(options, cb) {
+        if(options.is_demo) {
+            this.demoVersion = options.is_demo;
+            console.warn('Running in demo version = '+this.demoVersion);
+        }
         for(const key in this.modules) {
             this.modules[key].initialize(this);
         }

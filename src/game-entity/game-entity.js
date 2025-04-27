@@ -5,6 +5,7 @@ import {gameEffects} from "../resources/game-effects";
 import {gameResources} from "../resources/game-resources";
 import {SMALL_NUMBER} from "../utils/consts";
 import {gameUnlocks} from "../utils/unlocks";
+import {gameCore} from "../core";
 
 class GameEntity {
 
@@ -20,6 +21,11 @@ class GameEntity {
     registerGameEntity(id, entity) {
         if(this.entities[id]) {
             this.unsetEntity(id);
+        }
+        if(gameCore.demoVersion && entity.minDemoVersion) {
+            if(entity.minDemoVersion < gameCore.demoVersion) {
+                return ; // dont register anything requiring higher demo version
+            }
         }
         if(entity.copyFromId) {
             entity = {
