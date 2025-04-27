@@ -23,7 +23,7 @@ class GameEntity {
             this.unsetEntity(id);
         }
         if(gameCore.demoVersion && entity.minDemoVersion) {
-            if(entity.minDemoVersion < gameCore.demoVersion) {
+            if(entity.minDemoVersion > gameCore.demoVersion) {
                 return ; // dont register anything requiring higher demo version
             }
         }
