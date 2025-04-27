@@ -184,6 +184,7 @@ class GameEntity {
     }
 
     isEntityUnlocked(id) {
+        if(!this.entityExists(id)) return false;
         const entity = this.getEntity(id);
 
         if(entity.unlockedBy) {
