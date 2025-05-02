@@ -251,10 +251,10 @@ class GameResources {
         }
         for(const rsId in obj) {
             if(this.resources[rsId]) {
-                const amount = typeof this.resources[rsId] === 'object' ? this.resources[rsId].a : this.resources[rsId];
+                const amount = typeof obj[rsId] === 'object' ? obj[rsId].a : obj[rsId];
                 this.setResource(rsId, amount);
-                this.resources[rsId].spent = this.resources[rsId]?.s ?? 0;
-                this.resources[rsId].earned = this.resources[rsId]?.e ?? 0;
+                this.resources[rsId].spent = obj[rsId]?.s ?? 0;
+                this.resources[rsId].earned = obj[rsId]?.e ?? 0;
             }
         }
         return obj;
