@@ -21,6 +21,8 @@ class GameResources {
             resource.modifier = resourceModifiers.registerModifier(modif);
         }
         this.resources[id] = resource;
+        this.resources[id].earned = 0;
+        this.resources[id].spent = 0;
         this.resources[id].id = id;
         if(!this.resources[id].amount) {
             this.resources[id].amount = 0;
@@ -122,6 +124,12 @@ class GameResources {
         if(rs.unlockCondition && !rs.unlockCondition()) return ;
         if(rs.isService) return ;
         const amtToAdd = rs.hasCap ? Math.min(amount, rs.cap - (rs.amount || 0) ) : amount;
+        if(amount > 0) {
+            rs.earned += amount;
+        }
+        if(amount < 0) {
+            rs.spent -= amount;
+        }
         if(rs.amount < 0) {
             rs.amount = 0;
         }
@@ -228,7 +236,11 @@ class GameResources {
     save() {
         const obj = {};
         for(const rsId in this.resources) {
-            obj[rsId] = this.resources[rsId].amount;
+            obj[rsId] = {
+                a: this.resources[rsId].amount,
+                s: this.resources[rsId].spent,
+                e: this.resources[rsId].earned,
+            };
         }
         return obj;
     }
@@ -239,7 +251,10 @@ class GameResources {
         }
         for(const rsId in obj) {
             if(this.resources[rsId]) {
-                this.setResource(rsId, obj[rsId]);
+                const amount = typeof this.resources[rsId] === 'object' ? this.resources[rsId].a : this.resources[rsId];
+                this.setResource(rsId, amount);
+                this.resources[rsId].spent = this.resources[rsId]?.s ?? 0;
+                this.resources[rsId].earned = this.resources[rsId]?.e ?? 0;
             }
         }
         return obj;
