@@ -248,6 +248,8 @@ class GameResources {
     load(obj) {
         for(const rsId in this.resources) {
             this.setResource(rsId, 0);
+            this.resources[rsId].spent = 0;
+            this.resources[rsId].earned = 0;
         }
         for(const rsId in obj) {
             if(this.resources[rsId]) {
