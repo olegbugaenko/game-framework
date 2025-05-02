@@ -45,7 +45,7 @@ class ResourcesManager {
                         gameResources.resources[resourceId].isMissing = true;
                         gameResources.resources[resourceId].amount = 0;
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
-                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
+                        // console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
@@ -57,7 +57,7 @@ class ResourcesManager {
                         gameResources.resources[resourceId].isMissing = true;
                         gameResources.resources[resourceId].amount = 0;
                         gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
-                        console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
+                        // console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else {
                         if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
@@ -86,7 +86,7 @@ class ResourcesManager {
                             if(affected.affectedResources) {
                                 newResourcesToUpdate.push(...affected.affectedResources);
                             }
-                            console.log(`Iter${iter}: Toggling `+resourceId, prEff, 1./(SMALL_NUMBER + prEff), exceedFactor, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
+                            // console.log(`Iter${iter}: Toggling `+resourceId, prEff, 1./(SMALL_NUMBER + prEff), exceedFactor, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
                             isAssertsFinished = false;
                         }
                     }

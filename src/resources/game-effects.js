@@ -110,7 +110,7 @@ class GameEffects {
 
         if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
 
-        return gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['effect'][id], effect.value, id === 'attribute_magic_ability');
+        return gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['effect'][id], effect.value);
     }
 
     listEffectsByTags(tags, isOr = false, excludeIds = [], options = {}) {

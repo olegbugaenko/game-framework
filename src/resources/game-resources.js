@@ -137,7 +137,7 @@ class GameResources {
         if(rs.modifier && amtToAdd !== 0) {
             rs.modifier.level = rs.amount;
             resourceCalculators.regenerateModifier(rs.modifier.id);
-            console.log('rs.mod', rs.modifier);
+            // console.log('rs.mod', rs.modifier);
         }
         if(amtToAdd > SMALL_NUMBER*rs.consumption && rs.targetEfficiency < 1) {
             if(isDelayed) {
@@ -165,11 +165,11 @@ class GameResources {
         if(rs.modifier && amount > 0) {
             rs.modifier.level = rs.amount;
             resourceCalculators.regenerateModifier(rs.modifier.id);
-            console.log('rs.mod', rs.modifier);
+            // console.log('rs.mod', rs.modifier);
         }
         if(pAmount !== rs.amount && Math.abs((pAmount - rs.amount) / (pAmount + rs.amount)) > SMALL_NUMBER) {
             if(rs.isService && rs.targetEfficiency < 1 && !bPreventReset) {
-                console.log('resetEffService: ', rs, pAmount, amount, delayedReset);
+                // console.log('resetEffService: ', rs, pAmount, amount, delayedReset);
                 if(delayedReset) {
                     this.delayedResets[id] = amount;
                 } else {
@@ -184,7 +184,7 @@ class GameResources {
             if(rs.modifier) {
                 rs.modifier.level = rs.amount;
                 resourceCalculators.regenerateModifier(rs.modifier.id);
-                console.log('rs.mod.setResource', rs.modifier);
+                // console.log('rs.mod.setResource', rs.modifier);
             }
         }
         return rs.amount;
