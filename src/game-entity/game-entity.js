@@ -439,7 +439,7 @@ class GameEntity {
         })
     }
 
-    getEffects(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1, customEfficiency = 1) {
+    getEffects(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1, customEfficiency = 1, customAmplifier) {
 
         const result = [];
         const entity = this.entities[id];
@@ -520,7 +520,7 @@ class GameEntity {
 
         let intensityMultiplier = 1.;
         if(modif.getCustomAmplifier) {
-            intensityMultiplier = modif.getCustomAmplifier();
+            intensityMultiplier = customAmplifier ?? modif.getCustomAmplifier();
             // console.log('CustomAmpl: ', id, modif.getCustomAmplifier());
         }
 
@@ -559,7 +559,7 @@ class GameEntity {
         return result;
     }
 
-    getEffectsStructured(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1, customEfficiency = 1) {
+    getEffectsStructured(id, addLvl = 0, lvl = null, calculateForAbstract = false, customMultiplier = 1, customEfficiency = 1, customAmplifier) {
         const result = {
             resources: {
                 income: {},
@@ -643,7 +643,7 @@ class GameEntity {
 
         let intensityMultiplier = 1.;
         if (modif.getCustomAmplifier) {
-            intensityMultiplier = modif.getCustomAmplifier();
+            intensityMultiplier = customAmplifier ?? modif.getCustomAmplifier();
         }
 
         ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'].forEach(scope => {
