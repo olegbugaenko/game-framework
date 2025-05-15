@@ -95,6 +95,7 @@ class GameEntity {
                 entity.modifierGroupId = modif.groupId;
                 modif.id = modif.groupId;
             }
+            modif.originalEntityId = id;
             entity.modifier = resourceModifiers.registerModifier(modif, id);
         }
         this.entities[id] = entity;

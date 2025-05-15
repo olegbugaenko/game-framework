@@ -180,6 +180,9 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
+            if(options.skipById && rmod.originalEntityId === options.skipById) {
+                return;
+            }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
                 return;
             }
@@ -206,6 +209,9 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
+            if(options.skipById && rmod.originalEntityId === options.skipById) {
+                return;
+            }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
                 return;
             }
@@ -230,6 +236,9 @@ class ResourceCalculators {
         resourceModifiers.modifiersGroupped.byResource[id]?.consumption?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
+                return;
+            }
+            if(options.skipById && rmod.originalEntityId === options.skipById) {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
@@ -259,6 +268,9 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
+            if(options.skipById && rmod.originalEntityId === options.skipById) {
+                return;
+            }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
                 return;
             }
@@ -284,6 +296,9 @@ class ResourceCalculators {
         resourceModifiers.modifiersGroupped.byResource[id]?.capMult?.forEach(mod => {
             const rmod = resourceModifiers.getModifier(mod);
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
+                return;
+            }
+            if(options.skipById && rmod.originalEntityId === options.skipById) {
                 return;
             }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
