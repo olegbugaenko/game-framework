@@ -180,7 +180,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if(options.skipById && rmod.originalEntityId === options.skipById) {
+            if(options.skipById && options.skipById.includes(rmod.originalEntityId)) {
                 return;
             }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
@@ -209,7 +209,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if(options.skipById && rmod.originalEntityId === options.skipById) {
+            if(options.skipById && options.skipById.includes(rmod.originalEntityId)) {
                 return;
             }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
@@ -238,7 +238,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if(options.skipById && rmod.originalEntityId === options.skipById) {
+            if(options.skipById && options.skipById.includes(rmod.originalEntityId)) {
                 return;
             }
             let intensityMultiplier = rmod.effectFactor;
@@ -268,7 +268,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if(options.skipById && rmod.originalEntityId === options.skipById) {
+            if(options.skipById && options.skipById.includes(rmod.originalEntityId)) {
                 return;
             }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
@@ -298,7 +298,7 @@ class ResourceCalculators {
             if(skipByTags.some(tag => rmod.tags.includes(tag))) {
                 return;
             }
-            if(options.skipById && rmod.originalEntityId === options.skipById) {
+            if(options.skipById && options.skipById.includes(rmod.originalEntityId)) {
                 return;
             }
             if (getRelevantEfficiency(rmod.efficiency) === 0) {
