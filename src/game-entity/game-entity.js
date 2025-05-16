@@ -701,6 +701,7 @@ class GameEntity {
     getUsingEntities(resourceId) {
         const modifiersToImpact = resourceModifiers.modifiersGroupped.byResource?.[resourceId]?.consumption || [];
         const entitiesUsing = [];
+        console.log('getUsingEntities', resourceId, modifiersToImpact);
         modifiersToImpact.forEach(one => {
             if(!one.originalEntityId) return;
             if(!gameEntity.entityExists(one.originalEntityId)) return;
