@@ -22,6 +22,7 @@ class GameEntity {
 
     registerGameEntity(id, entity) {
         if(this.entities[id]) {
+            console.warn(`Entity ${id} already exists`);
             this.unsetEntity(id);
         }
         // console.log(`gameCore.demoVersion = ${gameCore.demoVersion}; ${entity.minDemoVersion}`);
@@ -162,6 +163,10 @@ class GameEntity {
 
         for(const tag in this.entitiesByTags) {
             this.entitiesByTags[tag] = this.entitiesByTags[tag].filter(ent => ent !== id);
+        }
+
+        for(const rs in this.resourcesCostsCache) {
+            this.resourcesCostsCache[rs] = this.resourcesCostsCache[rs].filter(eId => eId !== id);
         }
     }
 
