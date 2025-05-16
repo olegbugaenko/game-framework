@@ -113,16 +113,15 @@ export class ResourceModifiers {
                     }
                 }
                 if(modifier.isPersistent) {
+                    console.log(`${key}: add ${modifier.id} to ${effectKey}`);
                     if(!this.modifiersGroupped.byPotentialResource[key]) {
-                        this.modifiersGroupped.byPotentialResource[key] = {
-
-                        }
-                        if(!this.modifiersGroupped.byPotentialResource[key][effectKey]) {
-                            this.modifiersGroupped.byPotentialResource[key][effectKey] = []
-                        }
-                        if(!this.modifiersGroupped.byPotentialResource[key][effectKey].find(mod => mod === modifier.id)) {
-                            this.modifiersGroupped.byPotentialResource[key][effectKey].push(modifier.id);
-                        }
+                        this.modifiersGroupped.byPotentialResource[key] = {}
+                    }
+                    if(!this.modifiersGroupped.byPotentialResource[key][effectKey]) {
+                        this.modifiersGroupped.byPotentialResource[key][effectKey] = []
+                    }
+                    if(!this.modifiersGroupped.byPotentialResource[key][effectKey].find(mod => mod === modifier.id)) {
+                        this.modifiersGroupped.byPotentialResource[key][effectKey].push(modifier.id);
                     }
                 }
             }
