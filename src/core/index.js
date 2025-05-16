@@ -90,12 +90,10 @@ export class GameCore {
                 }
                 cb(this, currentDelta);
                 if(this.ticksAfterLoad === 0) {
+                    console.log('FIRST TICK');
                     for(const key in this.modules) {
-                        if(bDebug) {
-                            start = performance.now();
-                        }
                         if(this.modules[key].onLoaded) {
-                            this.modules[key].onloaded(this);
+                            this.modules[key].onLoaded(this);
                         }
                     }
                 }
