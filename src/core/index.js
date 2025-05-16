@@ -10,6 +10,7 @@ export class GameCore {
         this.modules = {};
         this.globalTime = 0;
         this.numTicks = 0;
+        this.ticksAfterLoad = 0;
         this.pid = Math.random();
         this.demoVersion = undefined;
         GameCore.instance = this;
@@ -60,6 +61,7 @@ export class GameCore {
 
     startTicking(interval, delta, cb, bDebug) {
         this.isTicking = true;
+        this.ticksAfterLoad = 0;
         this.ticker = setInterval(() => {
             const currentDelta = typeof delta === 'function' ? delta() : delta;
             if(this.isInitialized) {
@@ -87,7 +89,18 @@ export class GameCore {
                     console.log('TICKS: ', ticks, total);
                 }
                 cb(this, currentDelta);
+                if(this.ticksAfterLoad === 0) {
+                    for(const key in this.modules) {
+                        if(bDebug) {
+                            start = performance.now();
+                        }
+                        if(this.modules[key].onLoaded) {
+                            this.modules[key].onloaded(this);
+                        }
+                    }
+                }
                 this.numTicks++;
+                this.ticksAfterLoad++;
                 this.globalTime += currentDelta;
             }
         }, interval)
@@ -117,6 +130,7 @@ export class GameCore {
         gameResources.load(obj.resources || {});
         this.numTicks = obj.numTicks || 0;
         this.globalTime = obj.globalTime || 0;
+        this.ticksAfterLoad = 0;
     }
 
     getModule(id) {
