@@ -113,7 +113,6 @@ export class ResourceModifiers {
                     }
                 }
                 if(modifier.isPersistent) {
-                    console.log(`${key}: add ${modifier.id} to ${effectKey}`);
                     if(!this.modifiersGroupped.byPotentialResource[key]) {
                         this.modifiersGroupped.byPotentialResource[key] = {}
                     }

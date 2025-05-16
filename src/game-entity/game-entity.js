@@ -703,8 +703,9 @@ class GameEntity {
     getUsingEntities(resourceId) {
         const modifiersToImpact = resourceModifiers.modifiersGroupped.byPotentialResource?.[resourceId]?.consumption || [];
         const entitiesUsing = [];
-        console.log('getUsingEntities', resourceId, modifiersToImpact);
-        modifiersToImpact.forEach(one => {
+        // console.log('getUsingEntities', resourceId, modifiersToImpact);
+        modifiersToImpact.forEach(mod_id => {
+            const one = resourceModifiers.getModifier(mod_id);
             if(!one.originalEntityId) return;
             if(!gameEntity.entityExists(one.originalEntityId)) return;
             if(!this.isEntityUnlocked(one.originalEntityId)) return;
