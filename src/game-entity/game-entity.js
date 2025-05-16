@@ -9,12 +9,14 @@ import {gameCore} from "../core";
 
 class GameEntity {
 
+
+
     constructor() {
         GameEntity.instance = this;
         this.entities = {};
         this.entitiesByTags = {};
         this.satellitesMap = {};
-
+        this.resourcesCostsCache = {};
         // this.entitiesByDeps = {};
     }
 
@@ -108,6 +110,31 @@ class GameEntity {
                 }
                 this.entitiesByTags[tag].push(id)
             })
+        }
+
+        // Add to costs indexes
+        let costs = entity.cost ? {...entity.cost} : {};
+        if(entity.get_cost) {
+            costs = entity.get_cost();
+        }
+        if(entity.usageGain) {
+            let cons = entity.usageGain.consumption ? {...entity.usageGain.consumption} : {};
+            if(entity.usageGain.getConsumption) {
+                cons = entity.usageGain.getConsumption();
+            }
+            costs = {
+                ...costs,
+                ...cons
+            }
+        }
+        for(const key in costs) {
+            if(!this.resourcesCostsCache) {
+                this.resourcesCostsCache = {}
+            }
+            if(!this.resourcesCostsCache[key]) {
+                this.resourcesCostsCache[key] = []
+            }
+            this.resourcesCostsCache[key].push(id);
         }
 
         // console.log('Active modifiers: ', resourceModifiers.modifiers, resourceModifiers.modifiersGroupped);
@@ -710,6 +737,22 @@ class GameEntity {
             if(!gameEntity.entityExists(one.originalEntityId)) return;
             if(!this.isEntityUnlocked(one.originalEntityId)) return;
             const entity = gameEntity.getEntity(one.originalEntityId);
+            entitiesUsing.push({
+                id: entity.id,
+                name: entity.name,
+                level: entity.level
+            })
+        });
+        return entitiesUsing;
+    }
+
+
+    getUsedForEntities(resourceId) {
+        const entitiesUsing = this.resourcesCostsCache[resourceId] ?? [];
+        // console.log('getUsingEntities', resourceId, modifiersToImpact);
+        entitiesUsing.forEach(id => {
+            if(!this.isEntityUnlocked(id)) return;
+            const entity = gameEntity.getEntity(id);
             entitiesUsing.push({
                 id: entity.id,
                 name: entity.name,
