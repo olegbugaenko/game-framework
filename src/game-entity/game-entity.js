@@ -33,6 +33,7 @@ class GameEntity {
                 ...this.entities[entity.copyFromId],
                 allowedImpacts: [],
                 isAbstract: false,
+                isPersistent: entity.isPersistent, // directly override from explicit
                 ...entity,
             }
         }
@@ -96,6 +97,7 @@ class GameEntity {
                 modif.id = modif.groupId;
             }
             modif.originalEntityId = id;
+            modif.isPersistent = entity.isPersistent;
             entity.modifier = resourceModifiers.registerModifier(modif, id);
         }
         this.entities[id] = entity;
@@ -699,7 +701,7 @@ class GameEntity {
     }
 
     getUsingEntities(resourceId) {
-        const modifiersToImpact = resourceModifiers.modifiersGroupped.byResource?.[resourceId]?.consumption || [];
+        const modifiersToImpact = resourceModifiers.modifiersGroupped.byPotentialResource?.[resourceId]?.consumption || [];
         const entitiesUsing = [];
         console.log('getUsingEntities', resourceId, modifiersToImpact);
         modifiersToImpact.forEach(one => {

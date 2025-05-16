@@ -6,7 +6,8 @@ export class ResourceModifiers {
             byResource: {},
             byEffect: {},
             byDeps: {},
-            byResourceDeps: {}
+            byResourceDeps: {},
+            byPotentialResource: {},
         }
         ResourceModifiers.instance = this;
     }
@@ -40,6 +41,13 @@ export class ResourceModifiers {
         for(const id in this.modifiersGroupped.byResource) {
             for(const effectKey in this.modifiersGroupped.byResource[id]) {
                 this.modifiersGroupped.byResource[id][effectKey] = this.modifiersGroupped.byResource[id][effectKey]
+                    .filter(one => one !== modifierId);
+            }
+        }
+
+        for(const id in this.modifiersGroupped.byPotentialResource) {
+            for(const effectKey in this.modifiersGroupped.byPotentialResource[id]) {
+                this.modifiersGroupped.byPotentialResource[id][effectKey] = this.modifiersGroupped.byPotentialResource[id][effectKey]
                     .filter(one => one !== modifierId);
             }
         }
@@ -88,21 +96,38 @@ export class ResourceModifiers {
             modifier[effectKey] = modifier[`get_${effectKey}`]();
         }
 
-        if(modifier[effectKey].resources && modifier.allowedImpacts.includes('resources')) {
+        const allowResources = modifier.allowedImpacts.includes('resources');
+        if(modifier[effectKey].resources) {
             for(const key in modifier[effectKey].resources) {
-                if(!this.modifiersGroupped.byResource[key]) {
-                    this.modifiersGroupped.byResource[key] = {
+                if(allowResources) {
+                    if(!this.modifiersGroupped.byResource[key]) {
+                        this.modifiersGroupped.byResource[key] = {
 
+                        }
+                    }
+                    if(!this.modifiersGroupped.byResource[key][effectKey]) {
+                        this.modifiersGroupped.byResource[key][effectKey] = []
+                    }
+                    if(!this.modifiersGroupped.byResource[key][effectKey].find(mod => mod === modifier.id)) {
+                        this.modifiersGroupped.byResource[key][effectKey].push(modifier.id);
                     }
                 }
-                if(!this.modifiersGroupped.byResource[key][effectKey]) {
-                    this.modifiersGroupped.byResource[key][effectKey] = []
-                }
-                if(!this.modifiersGroupped.byResource[key][effectKey].find(mod => mod === modifier.id)) {
-                    this.modifiersGroupped.byResource[key][effectKey].push(modifier.id);
+                if(modifier.isPersistent) {
+                    if(!this.modifiersGroupped.byPotentialResource[key]) {
+                        this.modifiersGroupped.byPotentialResource[key] = {
+
+                        }
+                        if(!this.modifiersGroupped.byPotentialResource[key][effectKey]) {
+                            this.modifiersGroupped.byPotentialResource[key][effectKey] = []
+                        }
+                        if(!this.modifiersGroupped.byPotentialResource[key][effectKey].find(mod => mod === modifier.id)) {
+                            this.modifiersGroupped.byPotentialResource[key][effectKey].push(modifier.id);
+                        }
+                    }
                 }
             }
         }
+
         if(modifier[effectKey].effects && modifier.allowedImpacts.includes('effects')) {
             for(const key in modifier[effectKey].effects) {
                 if(!this.modifiersGroupped.byEffect[key]) {
