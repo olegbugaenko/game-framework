@@ -753,9 +753,10 @@ class GameEntity {
 
 
     getUsedForEntities(resourceId) {
-        const entitiesUsing = this.resourcesCostsCache[resourceId] ?? [];
+        const entitiesToImpact = this.resourcesCostsCache[resourceId] ?? [];
+        const entitiesUsing = [];
         // console.log('getUsingEntities', resourceId, modifiersToImpact);
-        entitiesUsing.forEach(id => {
+        entitiesToImpact.forEach(id => {
             if(!this.isEntityUnlocked(id)) return;
             const entity = gameEntity.getEntity(id);
             entitiesUsing.push({
