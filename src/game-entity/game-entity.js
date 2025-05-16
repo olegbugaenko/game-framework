@@ -698,6 +698,23 @@ class GameEntity {
         return entity.attributes || {};
     }
 
+    getUsingEntities(resourceId) {
+        const modifiersToImpact = resourceModifiers.modifiersGroupped.byResource?.[resourceId]?.consumption || [];
+        const entitiesUsing = [];
+        modifiersToImpact.forEach(one => {
+            if(!one.originalEntityId) return;
+            if(!gameEntity.entityExists(one.originalEntityId)) return;
+            if(!this.isEntityUnlocked(one.originalEntityId)) return;
+            const entity = gameEntity.getEntity(one.originalEntityId);
+            entitiesUsing.push({
+                id: entity.id,
+                name: entity.name,
+                level: entity.level
+            })
+        });
+        return entitiesUsing;
+    }
+
 }
 
 export const gameEntity = GameEntity.instance || new GameEntity();
