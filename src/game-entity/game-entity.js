@@ -35,6 +35,7 @@ class GameEntity {
             entity = {
                 ...this.entities[entity.copyFromId],
                 allowedImpacts: [],
+                allowedScopes: [],
                 isAbstract: false,
                 isPersistent: entity.isPersistent, // directly override from explicit
                 ...entity,
@@ -51,6 +52,9 @@ class GameEntity {
         entity.id = id;
         if(!entity.allowedImpacts || !entity.allowedImpacts.length) {
             entity.allowedImpacts = ['resources', 'effects'];
+        }
+        if(!entity.allowedScopes || !entity.allowedScopes.length) {
+            entity.allowedScopes = ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'];
         }
 
         if (entity.unlockedBy) {
@@ -87,10 +91,10 @@ class GameEntity {
             }
 
             // register resource modifier
-            const modif = {...entity.resourceModifier, level: entity.level, name: `${entity.resourceModifier.prefix || ''}${entity.name}`, allowedImpacts: entity.allowedImpacts, tags: entity.tags || []};
+            const modif = {...entity.resourceModifier, level: entity.level, name: `${entity.resourceModifier.prefix || ''}${entity.name}`, allowedImpacts: entity.allowedImpacts, allowedScopes: entity.allowedScopes, tags: entity.tags || []};
 
-            if(!modif.allowedImpacts) {
-                console.error('Not allowed empty modifiers', entity);
+            if(!modif.allowedImpacts || !modif.allowedScopes) {
+                console.error('Not allowed empty modifiers or scopes', entity);
             }
 
             if(!modif.id) {

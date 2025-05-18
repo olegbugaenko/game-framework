@@ -96,6 +96,9 @@ export class ResourceModifiers {
             modifier[effectKey] = modifier[`get_${effectKey}`]();
         }
 
+        if(!modifier.allowedScopes.includes(effectKey)) {
+            return; // Nothing to unpack
+        }
         const allowResources = modifier.allowedImpacts.includes('resources');
         if(modifier[effectKey].resources) {
             for(const key in modifier[effectKey].resources) {
