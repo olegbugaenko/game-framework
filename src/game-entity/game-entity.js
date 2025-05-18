@@ -35,7 +35,6 @@ class GameEntity {
             entity = {
                 ...this.entities[entity.copyFromId],
                 allowedImpacts: [],
-                allowedScopes: [],
                 isAbstract: false,
                 isPersistent: entity.isPersistent, // directly override from explicit
                 ...entity,
