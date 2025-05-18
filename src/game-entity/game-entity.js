@@ -427,7 +427,8 @@ class GameEntity {
             current.onLevelSet(current.level, pLev)
         }
         if(current.satelliteEntityId) {
-            this.setEntityLevel(current.satelliteEntityId, current.level, true);
+            const satelliteLevel = current.satelliteEntityLevelMod ? current.satelliteEntityLevelMod(current.level) : current.level;
+            this.setEntityLevel(current.satelliteEntityId, satelliteLevel, true);
         }
         return current;
     }
