@@ -71,6 +71,10 @@ class GameEntity {
             entity.resourceModifier.customAmplifierApplyTypes = ['resources', 'effects'];
         }
 
+        if(entity.resourceModifier && !entity.resourceModifier.customAmplifierApplyScopes) {
+            entity.resourceModifier.customAmplifierApplyScopes = ['income', 'consumption', 'multiplier', 'rawCap', 'capMult'];
+        }
+
         if(entity.resourceModifier && !entity.isAbstract) {
 
 
@@ -499,6 +503,9 @@ class GameEntity {
                 }
                 try {
                     if(!object.customAmplifierApplyTypes.includes(type)) {
+                        intensityMultiplier = 1.;
+                    }
+                    if(!object.customAmplifierApplyScopes.includes(scope)) {
                         intensityMultiplier = 1.;
                     }
                 } catch (e) {
