@@ -36,7 +36,7 @@ export class Formulas {
     }
 
     static calculateDecreasing(formula, x) {
-        let val = formula.B + formula.A * x / (formula.A + Math.pow(x, formula.diminish ?? 0.75));
+        let val = formula.B + formula.C * formula.A * x / (formula.A + Math.pow(x, formula.diminish ?? 0.75));
         return this.applyMinMax(val, formula);
     }
 
