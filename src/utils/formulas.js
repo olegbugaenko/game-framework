@@ -35,6 +35,11 @@ export class Formulas {
         return this.applyMinMax(val, formula);
     }
 
+    static calculateDecreasing(formula, x) {
+        let val = formula.B + formula.A * x / (formula.A + Math.pow(x, formula.diminish ?? 0.75));
+        return this.applyMinMax(val, formula);
+    }
+
     static calculateValue(formula, x) {
         if (formula.type === 0) {
             return Formulas.calculateLinearValue(formula, x);
@@ -46,6 +51,8 @@ export class Formulas {
             return Formulas.calculatePolyExponential(formula, x);
         } else if (formula.type === 4) {
             return Formulas.calculateDiminish(formula, x);
+        } else if (formula.type === 5) {
+            return Formulas.calculateDecreasing(formula, x);
         } else {
             throw new Error('Invalid formula type: ' + formula.type);
         }
