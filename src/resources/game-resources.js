@@ -51,6 +51,10 @@ class GameResources {
         return rs;
     }
 
+    resourceExists(id) {
+        return !!this.resources[id];
+    }
+
 
     isResourceUnlocked(id) {
         return !this.resources[id].unlockCondition || this.resources[id].unlockCondition()
