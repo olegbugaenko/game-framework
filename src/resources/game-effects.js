@@ -110,9 +110,6 @@ class GameEffects {
 
         if(!gameUnlocks.unlockMapping['effect']?.[id]) return null;
 
-        if(id === 'attribute_strength') {
-            console.log(`Unlocks of ${id}:`, effect.value, gameUnlocks.unlockMapping['effect'][id], gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['effect'][id], effect.value));
-        }
         return gameUnlocks.getPreviousUnlocks(gameUnlocks.unlockMapping['effect'][id], effect.value);
     }
 
