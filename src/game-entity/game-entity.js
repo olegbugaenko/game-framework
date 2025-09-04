@@ -56,7 +56,7 @@ class GameEntity {
             entity.allowedScopes = ['income', 'multiplier', 'consumption', 'rawCap', 'capMult'];
         }
 
-        if (entity.unlockedBy) {
+        if (entity.unlockedBy && !entity.hideUnlocks) {
             for (const unlockInfo of entity.unlockedBy) {
                 const unlockerId = unlockInfo.id;
                 const unlockerScope = unlockInfo.type;
