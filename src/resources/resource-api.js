@@ -39,6 +39,15 @@ export class ResourceApi {
                 if((key === 'multiplier' || key === 'capMult') && (Math.abs(item.value - 1) < SMALL_NUMBER)) {
                     continue;
                 }
+                
+                // Add isAvailable flag for negative resource consumption effects
+                if (type === 'resources' && scope === 'consumption' && item.value < 0) {
+                    const resource = gameResources.getResource(key);
+                    item.isAvailable = resource && resource.amount >= Math.abs(item.value);
+                } else {
+                    item.isAvailable = true; // Default to true for all other effects
+                }
+                
                 results.push(item);
             }
             return results;
