@@ -40,8 +40,8 @@ export class ResourceApi {
                     continue;
                 }
                 
-                // Add isAvailable flag for negative resource consumption effects
-                if (type === 'resources' && scope === 'consumption' && item.value < 0) {
+                // Add isAvailable flag for resource consumption effects
+                if (type === 'resources' && scope === 'consumption') {
                     const resource = gameResources.getResource(key);
                     item.isAvailable = resource && resource.amount >= Math.abs(item.value);
                 } else {
