@@ -114,15 +114,20 @@ class GameEffects {
     }
 
     listEffectsByTags(tags, isOr = false, excludeIds = [], options = {}) {
-        let suitableIds = []
-        if(isOr) {
-            suitableIds = tags.reduce((acc, tag) => [...acc, ...(this.effectsByTags[tag] || [])], []);
-        } else {
-            suitableIds = [...(this.effectsByTags[tags[0]] || [])];
-            for(let i = 1; i < tags.length; i++) {
-                suitableIds = suitableIds.filter(st => (this.effectsByTags[tags[i]] || []).find(st))
+        let suitableIds = [];
+        if(tags) {
+            if(isOr) {
+                suitableIds = tags.reduce((acc, tag) => [...acc, ...(this.effectsByTags[tag] || [])], []);
+            } else {
+                suitableIds = [...(this.effectsByTags[tags[0]] || [])];
+                for(let i = 1; i < tags.length; i++) {
+                    suitableIds = suitableIds.filter(st => (this.effectsByTags[tags[i]] || []).find(st))
+                }
             }
+        } else {
+            suitableIds = Object.keys(this.effects);
         }
+        
         if(excludeIds && excludeIds.length) {
             suitableIds = suitableIds.filter(id => !excludeIds.includes(id))
         }
