@@ -528,6 +528,7 @@ class GameEntity {
                 const item = {
                     id: key,
                     name: basic_name,
+                    description: efft.description,
                     value: val,
                     scope,
                     type,
