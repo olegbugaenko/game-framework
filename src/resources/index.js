@@ -46,12 +46,13 @@ class ResourcesManager {
                             gameResources.resources[resourceId].isMissing = true;
                             gameResources.resources[resourceId].amount = 0;
                             gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                            isAssertsFinished = false;
                         } else {
                             gameResources.resources[resourceId].isMissing = false;
                             gameResources.resources[resourceId].targetEfficiency = 1;
                         }
                         // console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
-                        isAssertsFinished = false;
+                        
                     } else
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
                         // now we should retain list of stuff consuming
