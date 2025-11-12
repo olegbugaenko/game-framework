@@ -523,7 +523,11 @@ class GameEntity {
                 if(scope === 'multiplier' || scope === 'capMult') {
                     val = 1 + (val - 1) * customEfficiency*intensityMultiplier;
                 } else {
-                    val = val * customEfficiency*intensityMultiplier;
+                    // Respect constant-efficiency resources: do not apply efficiency/intensity to consumption
+                    const isConstEffRes = (type === 'resources' && scope === 'consumption' && gameResources.getResource(key)?.isConstantEfficiency);
+                    const effMult = isConstEffRes ? 1 : customEfficiency;
+                    const intMult = isConstEffRes ? 1 : intensityMultiplier;
+                    val = val * effMult * intMult;
                 }
                 const item = {
                     id: key,
@@ -651,7 +655,10 @@ class GameEntity {
                 if (scope === 'multiplier' || scope === 'capMult') {
                     val = 1 + (val - 1) * customEfficiency * intensityMultiplier;
                 } else {
-                    val = val * customEfficiency * intensityMultiplier;
+                    const isConstEffRes = (type === 'resources' && scope === 'consumption' && gameResources.getResource(key)?.isConstantEfficiency);
+                    const effMult = isConstEffRes ? 1 : customEfficiency;
+                    const intMult = isConstEffRes ? 1 : intensityMultiplier;
+                    val = val * effMult * intMult;
                 }
 
                 if (val == null || Math.abs(val) < SMALL_NUMBER) continue;

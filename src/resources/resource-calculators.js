@@ -81,11 +81,16 @@ class ResourceCalculators {
                 intensityMultiplier *= rmod.getCustomAmplifier();
             }
             if (rmod.consumption?.effects?.[id]) {
-                const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency;
+                const isConstEff = gameResources.getResource(id)?.isConstantEfficiency;
+                const relevantEfficiency = isConstEff
+                    ? 1
+                    : (rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 : rmod.efficiency);
                 if (relevantEfficiency === 0) {
                     return;
                 }
-                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * relevantEfficiency * intensityMultiplier;
+                const effMult = isConstEff ? 1 : relevantEfficiency;
+                const intMult = isConstEff ? 1 : intensityMultiplier;
+                const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level) * effMult * intMult;
                 modifiersBreakdown.consumption.push({
                     id: mod,
                     name: rmod.name,
@@ -247,16 +252,21 @@ class ResourceCalculators {
             }
             if (rmod.consumption?.resources?.[id]) {
                 const amt = Formulas.calculateValue(rmod.consumption?.resources?.[id], rmod.level);
-                const relevantEfficiency = rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 :  getRelevantEfficiency(rmod.efficiency);
+                const isConstEff = gameResources.getResource(id)?.isConstantEfficiency;
+                const relevantEfficiency = isConstEff
+                    ? 1
+                    : (rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 :  getRelevantEfficiency(rmod.efficiency));
                 if (relevantEfficiency === 0) {
                     return;
                 }
-                consumption += amt * relevantEfficiency * intensityMultiplier;
+                const effMult = isConstEff ? 1 : relevantEfficiency;
+                const intMult = isConstEff ? 1 : intensityMultiplier;
+                consumption += amt * effMult * intMult;
                 if(amt > SMALL_NUMBER) {
                     modifiersBreakdown.consumption.push({
                         id: mod,
                         name: rmod.name,
-                        value: amt * relevantEfficiency * intensityMultiplier,
+                        value: amt * effMult * intMult,
                         label: rmod.consumption?.resources?.[id]?.label ?? rmod.name,
                     })
                 }
@@ -594,6 +604,13 @@ class ResourceCalculators {
     }
 
     toggleConsumingEfficiency(resourceId, efficiency, bReset = false) {
+        // For resources with constant efficiency, never throttle dependents
+        if (gameResources.getResource(resourceId)?.isConstantEfficiency) {
+            return {
+                efficiency,
+                affectedResourceIds: []
+            }
+        }
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
 
         let affectedResourceIds = [];

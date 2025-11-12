@@ -39,24 +39,34 @@ class ResourcesManager {
                 if(gameResources.resources[resourceId].balance) {
                     if(gameResources.resources[resourceId].isService && gameResources.resources[resourceId].balance < -SMALL_NUMBER) {
                         // we are missing service resource
-                        const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
-                        const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
-                        newResourcesToUpdate.push(...togg.affectedResourceIds)
-                        gameResources.resources[resourceId].isMissing = true;
-                        gameResources.resources[resourceId].amount = 0;
-                        gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                        if (!gameResources.resources[resourceId].isConstantEfficiency) {
+                            const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
+                            const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
+                            newResourcesToUpdate.push(...togg.affectedResourceIds)
+                            gameResources.resources[resourceId].isMissing = true;
+                            gameResources.resources[resourceId].amount = 0;
+                            gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                        } else {
+                            gameResources.resources[resourceId].isMissing = false;
+                            gameResources.resources[resourceId].targetEfficiency = 1;
+                        }
                         // console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
                         // now we should retain list of stuff consuming
-                        const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
-                        // console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, effPercentage);
-                        const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
-                        newResourcesToUpdate.push(...togg.affectedResourceIds)
-                        gameResources.resources[resourceId].isMissing = true;
-                        gameResources.resources[resourceId].amount = 0;
-                        gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                        if (!gameResources.resources[resourceId].isConstantEfficiency) {
+                            const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
+                            // console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, effPercentage);
+                            const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
+                            newResourcesToUpdate.push(...togg.affectedResourceIds)
+                            gameResources.resources[resourceId].isMissing = true;
+                            gameResources.resources[resourceId].amount = 0;
+                            gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                        } else {
+                            gameResources.resources[resourceId].isMissing = false;
+                            gameResources.resources[resourceId].targetEfficiency = 1;
+                        }
                         // console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else {
@@ -74,17 +84,22 @@ class ResourcesManager {
                             // котрій ми шомно ресетнули
                             // Тобто, якщо ми ресетнули ефективність по ресурсу crafting_ability - перевіряємо усе що генерилося
                             // тим що консюмить resourceId, і докидуємо ссууудааа
-                            const prEff = gameResources.resources[resourceId].targetEfficiency;
-                            const exceedFactor = gameResources.resources[resourceId].consumption
-                                ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
-                                : 1./Math.max(SMALL_NUMBER, prEff);
-                            const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
-                            gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
-                            gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
-                            const prUp = [...newResourcesToUpdate];
-                            newResourcesToUpdate.push(resourceId);
-                            if(affected.affectedResources) {
-                                newResourcesToUpdate.push(...affected.affectedResources);
+                            if (!gameResources.resources[resourceId].isConstantEfficiency) {
+                                const prEff = gameResources.resources[resourceId].targetEfficiency;
+                                const exceedFactor = gameResources.resources[resourceId].consumption
+                                    ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
+                                    : 1./Math.max(SMALL_NUMBER, prEff);
+                                const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
+                                gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
+                                gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
+                                const prUp = [...newResourcesToUpdate];
+                                newResourcesToUpdate.push(resourceId);
+                                if(affected.affectedResources) {
+                                    newResourcesToUpdate.push(...affected.affectedResources);
+                                }
+                            } else {
+                                gameResources.resources[resourceId].isMissing = false;
+                                gameResources.resources[resourceId].targetEfficiency = 1;
                             }
                             // console.log(`Iter${iter}: Toggling `+resourceId, prEff, 1./(SMALL_NUMBER + prEff), exceedFactor, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
                             isAssertsFinished = false;
