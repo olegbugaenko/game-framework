@@ -84,7 +84,12 @@ class ResourcesManager {
             };
 
             for(const resourceId of resourcesToUpdate) {
-                if(gameResources.resources[resourceId].balance) {
+                const res = gameResources.resources[resourceId];
+                // Process if there is flow OR resource needs unfreeze OR service missing
+                const needProcess = (Math.abs(res.balance || 0) > SMALL_NUMBER)
+                    || ((res.targetEfficiency ?? 1) < 1)
+                    || (res.isService && res.isMissing);
+                if(needProcess) {
                     if(gameResources.resources[resourceId].isService && gameResources.resources[resourceId].balance < -SMALL_NUMBER) {
                         // we are missing service resource
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
@@ -163,9 +168,10 @@ class ResourcesManager {
                             isAssertsFinished = false;
                         }
                     }
-                    resourcesToUpdate = [...new Set(newResourcesToUpdate)];
                 }
             }
+            // Update worklist after full pass
+            resourcesToUpdate = [...new Set(newResourcesToUpdate)];
             // console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources)));
             if(iter > maxIter) {
                 const problematicResources = resourcesToUpdate.map(resourceId => {
