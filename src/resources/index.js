@@ -32,7 +32,7 @@ class ResourcesManager {
         const start = performance.now();
         // console.log('iter started: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
         gameResources.handleDelayed();
-        let maxIter = 10;
+        let maxIter = 20;
         let iter = 0;
         // console.log('START_ITER: EntEEF', resourceModifiers.getModifier('entity_runningAction').efficiency);
         // console.log('asserting: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
