@@ -26,23 +26,47 @@ class ResourcesManager {
         let iter = 0;
         // console.log('START_ITER: EntEEF', resourceModifiers.getModifier('entity_runningAction').efficiency);
         // console.log('asserting: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
+        // Build initial dirty set rather than all resources
+        const hasFlow = (res) => Math.abs(res?.income || 0) > SMALL_NUMBER || Math.abs(res?.consumption || 0) > SMALL_NUMBER;
+        const shouldTrack = (res) => {
+            if(!res) return false;
+            if(Math.abs(res.balance || 0) > SMALL_NUMBER) return true;
+            if(res.isService && res.isMissing) return true;
+            if(hasFlow(res) && (res.isMissing || (res.targetEfficiency ?? 1) < 1)) return true;
+            return false;
+        };
         let resourcesToUpdate = [];
         for (const resourceId in gameResources.resources) {
-            resourcesToUpdate.push(resourceId);
+            const res = gameResources.resources[resourceId];
+            if(shouldTrack(res)) {
+                resourcesToUpdate.push(resourceId);
+            }
         }
 
         while(!isAssertsFinished) {
             isAssertsFinished = true;
             iter++;
             let newResourcesToUpdate = [];
+
+            // Helper to safely queue resource for re-assert
+            const addDirty = (rid) => {
+                const r = gameResources.resources[rid];
+                if(!r) return;
+                if(r.isConstantEfficiency) return;
+                if(!hasFlow(r)) return;
+                newResourcesToUpdate.push(rid);
+            };
+
             for(const resourceId of resourcesToUpdate) {
                 if(gameResources.resources[resourceId].balance) {
                     if(gameResources.resources[resourceId].isService && gameResources.resources[resourceId].balance < -SMALL_NUMBER) {
                         // we are missing service resource
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                            const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
+                            const effPercentage = gameResources.resources[resourceId].consumption
+                                ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
+                                : 0;
                             const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
-                            newResourcesToUpdate.push(...togg.affectedResourceIds)
+                            (togg.affectedResourceIds || []).forEach(addDirty);
                             gameResources.resources[resourceId].isMissing = true;
                             gameResources.resources[resourceId].amount = 0;
                             gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
@@ -57,13 +81,17 @@ class ResourcesManager {
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
                         // now we should retain list of stuff consuming
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                            const effPercentage = gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption;
-                            // console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, effPercentage);
-                            const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
-                            newResourcesToUpdate.push(...togg.affectedResourceIds)
-                            gameResources.resources[resourceId].isMissing = true;
-                            gameResources.resources[resourceId].amount = 0;
-                            gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                            if(hasFlow(gameResources.resources[resourceId])) {
+                                const effPercentage = gameResources.resources[resourceId].consumption
+                                    ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
+                                    : 0;
+                                // console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, effPercentage);
+                                const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
+                                (togg.affectedResourceIds || []).forEach(addDirty);
+                                gameResources.resources[resourceId].isMissing = true;
+                                gameResources.resources[resourceId].amount = 0;
+                                gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                            }
                         } else {
                             gameResources.resources[resourceId].isMissing = false;
                             gameResources.resources[resourceId].targetEfficiency = 1;
@@ -94,9 +122,9 @@ class ResourcesManager {
                                 gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
                                 gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
                                 const prUp = [...newResourcesToUpdate];
-                                newResourcesToUpdate.push(resourceId);
+                                addDirty(resourceId);
                                 if(affected.affectedResources) {
-                                    newResourcesToUpdate.push(...affected.affectedResources);
+                                    (affected.affectedResources || []).forEach(addDirty);
                                 }
                             } else {
                                 gameResources.resources[resourceId].isMissing = false;
