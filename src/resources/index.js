@@ -111,7 +111,36 @@ class ResourcesManager {
             }
             // console.log(`Iter: ${iter}`, resourcesToUpdate.length, newResourcesToUpdate, JSON.parse(JSON.stringify(gameResources.resources)));
             if(iter > maxIter) {
-                console.error('CRITICAL ERROR: not able to find resources divergence.', JSON.parse(JSON.stringify(gameResources.resources)), gameResources.listMissing());
+                const problematicResources = resourcesToUpdate.map(resourceId => {
+                    const res = gameResources.resources[resourceId];
+                    return {
+                        id: resourceId,
+                        name: res.name,
+                        balance: res.balance,
+                        income: res.income,
+                        consumption: res.consumption,
+                        multiplier: res.multiplier,
+                        amount: res.amount,
+                        isMissing: res.isMissing,
+                        targetEfficiency: res.targetEfficiency,
+                        isService: res.isService,
+                        isConstantEfficiency: res.isConstantEfficiency,
+                        issues: [
+                            res.isService && res.balance < -SMALL_NUMBER ? 'service_resource_negative_balance' : null,
+                            !res.isService && -1*res.balance*dT - SMALL_NUMBER > res.amount ? 'resource_finishing' : null,
+                            res.isMissing && res.balance > 0 ? 'missing_but_positive_balance' : null,
+                        ].filter(Boolean)
+                    };
+                });
+                
+                console.error('CRITICAL ERROR: not able to find resources divergence.', {
+                    iteration: iter,
+                    maxIterations: maxIter,
+                    resourcesStillUpdating: resourcesToUpdate,
+                    problematicResources,
+                    allResources: JSON.parse(JSON.stringify(gameResources.resources)),
+                    missingResources: gameResources.listMissing()
+                });
                 isAssertsFinished = true;
             }
         }
