@@ -5,6 +5,16 @@ import { gameEffects } from "./game-effects";
 import { resourceApi } from  "./resource-api";
 import {SMALL_NUMBER} from "../utils/consts";
 
+// Runtime switch between legacy and optimized resource balancing
+let activeAlgo = 'optimized'; // 'legacy' | 'optimized'
+// Expose setter via API without circular imports
+resourceApi.setResourcesAlgo = (mode) => {
+    if(mode === 'legacy' || mode === 'optimized') {
+        activeAlgo = mode;
+    }
+    return activeAlgo;
+};
+
 class ResourcesManager {
 
     constructor() {
@@ -26,19 +36,27 @@ class ResourcesManager {
         let iter = 0;
         // console.log('START_ITER: EntEEF', resourceModifiers.getModifier('entity_runningAction').efficiency);
         // console.log('asserting: ', JSON.parse(JSON.stringify(gameResources.resources['crafting_ability'])));
-        // Build initial dirty set rather than all resources
+        // Build initial dirty set
         const hasFlow = (res) => Math.abs(res?.income || 0) > SMALL_NUMBER || Math.abs(res?.consumption || 0) > SMALL_NUMBER;
-        const shouldTrack = (res) => {
-            if(!res) return false;
-            if(Math.abs(res.balance || 0) > SMALL_NUMBER) return true;
-            if(res.isService && res.isMissing) return true;
-            if(hasFlow(res) && (res.isMissing || (res.targetEfficiency ?? 1) < 1)) return true;
-            return false;
-        };
         let resourcesToUpdate = [];
-        for (const resourceId in gameResources.resources) {
-            const res = gameResources.resources[resourceId];
-            if(shouldTrack(res)) {
+        if(activeAlgo === 'optimized') {
+            const shouldTrack = (res) => {
+                if(!res) return false;
+                // Always track resources that need unfreeze
+                if((res.targetEfficiency ?? 1) < 1) return true;
+                if(Math.abs(res.balance || 0) > SMALL_NUMBER) return true;
+                if(res.isService && res.isMissing) return true;
+                if(hasFlow(res) && res.isMissing) return true;
+                return false;
+            };
+            for (const resourceId in gameResources.resources) {
+                const res = gameResources.resources[resourceId];
+                if(shouldTrack(res)) {
+                    resourcesToUpdate.push(resourceId);
+                }
+            }
+        } else {
+            for (const resourceId in gameResources.resources) {
                 resourcesToUpdate.push(resourceId);
             }
         }
@@ -52,8 +70,16 @@ class ResourcesManager {
             const addDirty = (rid) => {
                 const r = gameResources.resources[rid];
                 if(!r) return;
-                if(r.isConstantEfficiency) return;
-                if(!hasFlow(r)) return;
+                if(activeAlgo === 'optimized') {
+                    if(r.isConstantEfficiency) return;
+                    // If resource needs unfreeze, always allow it to be processed
+                    if((r.targetEfficiency ?? 1) < 1) {
+                        newResourcesToUpdate.push(rid);
+                        return;
+                    }
+                    // Otherwise skip zero-flow resources
+                    if(!hasFlow(r)) return;
+                }
                 newResourcesToUpdate.push(rid);
             };
 
@@ -81,7 +107,8 @@ class ResourcesManager {
                     if(-1*gameResources.resources[resourceId].balance*dT - SMALL_NUMBER > gameResources.resources[resourceId].amount) {
                         // now we should retain list of stuff consuming
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                            if(hasFlow(gameResources.resources[resourceId])) {
+                            const doPropagate = activeAlgo === 'optimized' ? hasFlow(gameResources.resources[resourceId]) : true;
+                            if(doPropagate) {
                                 const effPercentage = gameResources.resources[resourceId].consumption
                                     ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
                                     : 0;
@@ -99,7 +126,7 @@ class ResourcesManager {
                         // console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else {
-                        if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
+                        if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > SMALL_NUMBER) {
                             // console.log('Toggling '+resourceId);
                             // ми тугланули на 100% ресурс котрий ми начебто міссили. (crafting_ability)
                             // але цей тугл тягне за собою необхідність апдейту тих resourceModifiers, у яких ботлнек - цей ресурс
