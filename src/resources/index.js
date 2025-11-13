@@ -88,9 +88,11 @@ class ResourcesManager {
                     if(gameResources.resources[resourceId].isService && gameResources.resources[resourceId].balance < -SMALL_NUMBER) {
                         // we are missing service resource
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                            const effPercentage = gameResources.resources[resourceId].consumption
+                            const ratio = gameResources.resources[resourceId].consumption
                                 ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
                                 : 0;
+                            // Clamp efficiency ratio so that missing resources never collapse dependants to 0%
+                            const effPercentage = Math.max(SMALL_NUMBER, ratio);
                             const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
                             (togg.affectedResourceIds || []).forEach(addDirty);
                             gameResources.resources[resourceId].isMissing = true;
