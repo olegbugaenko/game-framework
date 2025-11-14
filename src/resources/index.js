@@ -153,7 +153,10 @@ class ResourcesManager {
                                     ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
                                     : 1./Math.max(SMALL_NUMBER, prEff);
                                 const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
-                                gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
+                                // Ensure we can recover from a fully throttled (0) efficiency when balance is positive:
+                                // lift to at least SMALL_NUMBER before scaling, then clamp to 1.
+                                const currentEff = Math.max(SMALL_NUMBER, prEff || 0);
+                                gameResources.resources[resourceId].targetEfficiency = Math.min(1, currentEff * exceedFactor);
                                 gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
                                 const prUp = [...newResourcesToUpdate];
                                 addDirty(resourceId);

@@ -674,7 +674,8 @@ class ResourceCalculators {
 
             })
         }
-        gameResources.getResource(resourceId).isMissing = targetEff >= 1.;
+        // Mark resource as missing only when its target efficiency is below 100%.
+        gameResources.getResource(resourceId).isMissing = targetEff < 1.;
         gameResources.getResource(resourceId).targetEfficiency = targetEff;
 
         return {
