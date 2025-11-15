@@ -629,7 +629,11 @@ class ResourceCalculators {
                 if(consumer.nIter > 8) {
                     return;
                 }
-                this.updateModifierEfficiency(consumer.id, Math.min(1, consumer.efficiency * efficiency));
+                // When recovering after a bottleneck clears (bReset=true), avoid 0 * factor = 0 trap:
+                // lift baseline to at least SMALL_NUMBER, and also clamp the factor.
+                const baselineEfficiency = bReset ? Math.max(consumer.efficiency || 0, SMALL_NUMBER) : consumer.efficiency;
+                const scaledEfficiency = Math.min(1, baselineEfficiency * Math.max(SMALL_NUMBER, efficiency));
+                this.updateModifierEfficiency(consumer.id, scaledEfficiency);
                 if(consumer.bottleNeck && consumer.bottleNeck !== resourceId) {
                     affectedResourceIds.push(consumer.bottleNeck);
                 }
