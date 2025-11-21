@@ -5,6 +5,16 @@ import { gameEffects } from "./game-effects";
 import { resourceApi } from  "./resource-api";
 import {SMALL_NUMBER} from "../utils/consts";
 
+// Runtime switch between legacy and optimized resource balancing
+let activeAlgo = 'optimized'; // 'legacy' | 'optimized'
+// Expose setter via API without circular imports
+resourceApi.setResourcesAlgo = (mode) => {
+    if(mode === 'legacy' || mode === 'optimized') {
+        activeAlgo = mode;
+    }
+    return activeAlgo;
+};
+
 class ResourcesManager {
 
     constructor() {
@@ -123,7 +133,7 @@ class ResourcesManager {
                         // console.log(`Iter${iter}: ${resourceId} is missing: `, effPercentage, gameResources.resources[resourceId].targetEfficiency, gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])))
                         isAssertsFinished = false;
                     } else {
-                        if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > 0) {
+                        if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > SMALL_NUMBER) {
                             // console.log('Toggling '+resourceId);
                             // ми тугланули на 100% ресурс котрий ми начебто міссили. (crafting_ability)
                             // але цей тугл тягне за собою необхідність апдейту тих resourceModifiers, у яких ботлнек - цей ресурс
