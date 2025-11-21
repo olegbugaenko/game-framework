@@ -740,7 +740,8 @@ class GameEntity {
             entity.attributes = {};
         }
 
-        return entity.attributes[attributeId] || defaultValue;
+        const value = entity.attributes[attributeId];
+        return value == null ? defaultValue : value;
     }
 
     getAttributesObject(id) {
