@@ -731,6 +731,19 @@ class GameEntity {
         }
 
         entity.attributes[attributeId] = value;
+
+        // If this attribute requires modifier regeneration - trigger it
+        try {
+            const attrsToRegen = entity.attributeRegenDeps || entity.attributesRegenDeps || entity.attributesRequireRegeneration;
+            if (Array.isArray(attrsToRegen) && attrsToRegen.includes(attributeId)) {
+                const modifierId = entity?.modifier?.id || (entity?.modifierGroupId ? entity.modifierGroupId : `entity_${id}`);
+                if (modifierId) {
+                    resourceCalculators.regenerateModifier(modifierId, true);
+                }
+            }
+        } catch (e) {
+            // ignore
+        }
     }
 
     getAttribute(id, attributeId, defaultValue) {
