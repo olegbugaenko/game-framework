@@ -257,14 +257,20 @@ class ResourceCalculators {
                 const relevantEfficiency = isConstEff
                     ? 1
                     : (rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 :  getRelevantEfficiency(rmod.efficiency));
+                const intMult = isConstEff ? 1 : intensityMultiplier;
+                
+                // baseConsumption = consumption at 100% efficiency (ALWAYS add, regardless of current efficiency)
+                // This is needed for calculating targetEfficiency correctly
+                if(amt > SMALL_NUMBER) {
+                    baseConsumption += amt * intMult;
+                }
+                
+                // Skip actual consumption if efficiency is 0
                 if (relevantEfficiency === 0) {
                     return;
                 }
                 const effMult = isConstEff ? 1 : relevantEfficiency;
-                const intMult = isConstEff ? 1 : intensityMultiplier;
                 consumption += amt * effMult * intMult;
-                // baseConsumption = consumption at 100% efficiency (for calculating targetEfficiency)
-                baseConsumption += amt * intMult;
                 if(amt > SMALL_NUMBER) {
                     modifiersBreakdown.consumption.push({
                         id: mod,
@@ -619,8 +625,10 @@ class ResourceCalculators {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
 
         let affectedResourceIds = [];
+        let resourcesToReassert = new Set();
 
         if(consuming && consuming.length) {
+            // First pass: update all consumer efficiencies without triggering reasserts
             consuming.forEach(consumerId => {
                 const consumer = resourceModifiers.getModifier(consumerId);
                 
@@ -659,7 +667,12 @@ class ResourceCalculators {
                     ? Math.min(1, ...bottleneckValues) 
                     : 1;
                 
-                this.updateModifierEfficiency(consumer.id, newEfficiency);
+                // Update efficiency directly without triggering cascading reasserts
+                resourceModifiers.setEfficiency(consumer.id, newEfficiency);
+                
+                // Collect resources to reassert later
+                const deps = resourceModifiers.getDependenciesToRegenerate(consumer.id);
+                deps.resources.forEach(rs => resourcesToReassert.add(rs));
                 
                 // Update bottleNeck to the most restrictive one
                 if (bottleneckValues.length > 0) {
@@ -674,6 +687,9 @@ class ResourceCalculators {
                     consumer.bottleNeck = minResourceId;
                 }
             })
+            
+            // Second pass: reassert all affected resources AFTER all efficiencies are updated
+            resourcesToReassert.forEach(rs => this.assertResource(rs));
         }
 
         return {
@@ -684,8 +700,10 @@ class ResourceCalculators {
 
     resetConsumingEfficiency(resourceId, bCheckBottleneck = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
-        let affectedResources = [];
+        let resourcesToReassert = new Set();
+        
         if(consuming && consuming.length) {
+            // First pass: update all consumer efficiencies
             consuming.forEach(consumerId => {
                 const consumer = resourceModifiers.getModifier(consumerId);
                 
@@ -706,7 +724,7 @@ class ResourceCalculators {
                     const newEfficiency = bottleneckValues.length > 0 
                         ? Math.min(1, ...bottleneckValues) 
                         : 1;
-                    this.updateModifierEfficiency(consumer.id, newEfficiency);
+                    resourceModifiers.setEfficiency(consumer.id, newEfficiency);
                     
                     // Update bottleNeck to the most restrictive remaining one
                     if (bottleneckValues.length > 0) {
@@ -729,7 +747,7 @@ class ResourceCalculators {
                         const newEfficiency = bottleneckValues.length > 0 
                             ? Math.min(1, ...bottleneckValues) 
                             : 1;
-                        this.updateModifierEfficiency(consumer.id, newEfficiency);
+                        resourceModifiers.setEfficiency(consumer.id, newEfficiency);
                         
                         // Update bottleNeck
                         if (bottleneckValues.length > 0) {
@@ -748,14 +766,18 @@ class ResourceCalculators {
                     }
                 }
 
-                affectedResources.push(...resourceModifiers.getDependenciesToRegenerate(consumer.id).resources)
+                // Collect resources to reassert
+                resourceModifiers.getDependenciesToRegenerate(consumer.id).resources.forEach(rs => resourcesToReassert.add(rs));
             })
+            
+            // Second pass: reassert all affected resources
+            resourcesToReassert.forEach(rs => this.assertResource(rs));
         }
         gameResources.getResource(resourceId).isMissing = false;
         gameResources.getResource(resourceId).targetEfficiency = 1;
 
         return {
-            affectedResources
+            affectedResources: [...resourcesToReassert]
         }
     }
 

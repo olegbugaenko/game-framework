@@ -15,6 +15,16 @@ resourceApi.setResourcesAlgo = (mode) => {
     return activeAlgo;
 };
 
+// Helper to calculate targetEfficiency from baseConsumption
+// Returns 0 if income is 0 (no production means no consumption allowed)
+const calcTargetEfficiency = (res) => {
+    const baseCons = res.baseConsumption || res.consumption;
+    if (baseCons <= SMALL_NUMBER) return 1;
+    const effectiveIncome = res.multiplier * res.income;
+    if (effectiveIncome <= SMALL_NUMBER) return 0; // No income = no efficiency
+    return Math.min(1, effectiveIncome / baseCons);
+};
+
 class ResourcesManager {
 
     constructor() {
@@ -93,11 +103,7 @@ class ResourcesManager {
                     if(gameResources.resources[resourceId].isService && gameResources.resources[resourceId].balance < -SMALL_NUMBER) {
                         // we are missing service resource
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                            // Use baseConsumption (consumption at 100% efficiency) for calculating targetEfficiency
-                            const baseCons = gameResources.resources[resourceId].baseConsumption || gameResources.resources[resourceId].consumption;
-                            const newTargetEff = baseCons > SMALL_NUMBER
-                                ? Math.min(1, Math.max(SMALL_NUMBER, gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / baseCons))
-                                : 1;
+                            const newTargetEff = calcTargetEfficiency(gameResources.resources[resourceId]);
                             const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, newTargetEff, true);
                             (togg.affectedResourceIds || []).forEach(addDirty);
                             gameResources.resources[resourceId].isMissing = true;
@@ -116,11 +122,7 @@ class ResourcesManager {
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
                             const doPropagate = activeAlgo === 'optimized' ? hasFlow(gameResources.resources[resourceId]) : true;
                             if(doPropagate) {
-                                // Use baseConsumption (consumption at 100% efficiency) for calculating targetEfficiency
-                                const baseCons = gameResources.resources[resourceId].baseConsumption || gameResources.resources[resourceId].consumption;
-                                const newTargetEff = baseCons > SMALL_NUMBER
-                                    ? Math.min(1, Math.max(SMALL_NUMBER, gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / baseCons))
-                                    : 1;
+                                const newTargetEff = calcTargetEfficiency(gameResources.resources[resourceId]);
                                 // console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, newTargetEff);
                                 const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, newTargetEff, true);
                                 (togg.affectedResourceIds || []).forEach(addDirty);
@@ -138,11 +140,7 @@ class ResourcesManager {
                         if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > SMALL_NUMBER) {
                             // Resource was missing but now has positive balance - recalculate efficiency
                             if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                                // Use baseConsumption for direct targetEfficiency calculation
-                                const baseCons = gameResources.resources[resourceId].baseConsumption || gameResources.resources[resourceId].consumption;
-                                const newTargetEff = baseCons > SMALL_NUMBER
-                                    ? Math.min(1, Math.max(SMALL_NUMBER, gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / baseCons))
-                                    : 1;
+                                const newTargetEff = calcTargetEfficiency(gameResources.resources[resourceId]);
                                 const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, newTargetEff, true);
                                 gameResources.resources[resourceId].targetEfficiency = newTargetEff;
                                 gameResources.resources[resourceId].isMissing = newTargetEff < 1;
