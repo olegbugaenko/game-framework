@@ -613,6 +613,7 @@ class ResourceCalculators {
         }
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
         const resource = gameResources.getResource(resourceId);
+        const resourceTargetEff = resource?.targetEfficiency ?? 1;
 
         let affectedResourceIds = [];
 
@@ -632,42 +633,25 @@ class ResourceCalculators {
                     return;
                 }
                 
-                // Initialize bottlenecks as Set if not exists
-                if (!consumer.bottlenecks) {
-                    consumer.bottlenecks = new Set();
-                }
-                
                 if (efficiency < 1) {
-                    // Resource is a bottleneck - add to set
-                    consumer.bottlenecks.add(resourceId);
-                    // Track which resource is the primary bottleneck (for affectedResourceIds)
+                    // Resource is a bottleneck
+                    if (consumer.bottleNeck !== resourceId && consumer.efficiency > resourceTargetEff) {
+                        // New bottleneck for this consumer, and consumer is "fresh" (efficiency higher than target)
+                        // Sync to targetEfficiency to prevent "blanket pulling"
+                        this.updateModifierEfficiency(consumer.id, resourceTargetEff);
+                    } else {
+                        // Normal multiplication
+                        this.updateModifierEfficiency(consumer.id, Math.min(1, consumer.efficiency * efficiency));
+                    }
+                    
                     if(consumer.bottleNeck && consumer.bottleNeck !== resourceId) {
                         affectedResourceIds.push(consumer.bottleNeck);
                     }
                     consumer.bottleNeck = resourceId;
                 } else {
-                    // Resource is no longer a bottleneck - check if targetEfficiency >= 1
-                    if (resource && resource.targetEfficiency >= 1 - SMALL_NUMBER) {
-                        consumer.bottlenecks.delete(resourceId);
-                        if (consumer.bottleNeck === resourceId) {
-                            consumer.bottleNeck = null;
-                        }
-                    }
+                    // Resource is not a bottleneck - normal multiplication to restore efficiency
+                    this.updateModifierEfficiency(consumer.id, Math.min(1, consumer.efficiency * efficiency));
                 }
-                
-                // Calculate final efficiency as min of all bottleneck targetEfficiencies
-                let newEfficiency = 1;
-                if (consumer.bottlenecks.size > 0) {
-                    for (const bnResourceId of consumer.bottlenecks) {
-                        const bnResource = gameResources.getResource(bnResourceId);
-                        const bnTargetEff = bnResource?.targetEfficiency ?? 1;
-                        if (bnTargetEff < newEfficiency) {
-                            newEfficiency = bnTargetEff;
-                        }
-                    }
-                }
-                
-                this.updateModifierEfficiency(consumer.id, newEfficiency);
                 
                 /*if(resourceId === 'crafting_ability' || resourceId === 'inventory_paper' || resourceId === 'inventory_enchanted_paper') {
                     console.log('Consumers of '+resourceId, consumer.id, consumer.efficiency, efficiency, JSON.parse(JSON.stringify(affectedResourceIds)), consumer.nIter);
@@ -691,40 +675,17 @@ class ResourceCalculators {
         if(consuming && consuming.length) {
             consuming.forEach(consumerId => {
                 const consumer = resourceModifiers.getModifier(consumerId);
-                
-                // Initialize bottlenecks as Set if not exists
-                if (!consumer.bottlenecks) {
-                    consumer.bottlenecks = new Set();
-                }
-                
                 if(!bCheckBottleneck) {
-                    // Full reset - remove this resource from bottlenecks and recalculate
-                    consumer.bottlenecks.delete(resourceId);
-                    if (consumer.bottleNeck === resourceId) {
-                        consumer.bottleNeck = null;
-                    }
+                    this.updateModifierEfficiency(consumer.id, 1);
                 } else {
-                    // Check bottleneck - only reset if this resource was in bottlenecks
-                    if(consumer.bottlenecks.has(resourceId)) {
-                        consumer.bottlenecks.delete(resourceId);
-                        if (consumer.bottleNeck === resourceId) {
-                            consumer.bottleNeck = null;
-                        }
+                    // console.log('CHKN Checking bottleneck for '+resourceId, consumer.id, consumer.bottleNeck);
+                    //
+                    // We should get here next target, but for now use this dirty hack
+                    targetEff = 1.; // Math.min(1, Math.max(consumer.efficiency, 100*SMALL_NUMBER)*4);
+                    if(consumer.bottleNeck === resourceId) {
+                        this.updateModifierEfficiency(consumer.id,targetEff);
                     }
                 }
-                
-                // Calculate final efficiency as min of all bottleneck targetEfficiencies
-                let newEfficiency = 1;
-                if (consumer.bottlenecks.size > 0) {
-                    for (const bnResourceId of consumer.bottlenecks) {
-                        const bnResource = gameResources.getResource(bnResourceId);
-                        const bnTargetEff = bnResource?.targetEfficiency ?? 1;
-                        if (bnTargetEff < newEfficiency) {
-                            newEfficiency = bnTargetEff;
-                        }
-                    }
-                }
-                this.updateModifierEfficiency(consumer.id, newEfficiency);
 
                 affectedResources.push(...resourceModifiers.getDependenciesToRegenerate(consumer.id).resources)
 
