@@ -674,7 +674,7 @@ class ResourceCalculators {
 
             })
         }
-        gameResources.getResource(resourceId).isMissing = targetEff >= 1.;
+        gameResources.getResource(resourceId).isMissing = targetEff < 1.;
         gameResources.getResource(resourceId).targetEfficiency = targetEff;
 
         return {
