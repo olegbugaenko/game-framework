@@ -627,6 +627,7 @@ class ResourceCalculators {
                 }
                 consumer.nIter = (consumer.nIter) + 1;
                 if(consumer.nIter > 8) {
+                    console.warn('Consuming efficiency loop detected for ', consumer.id, consumer.efficiency, efficiency);
                     return;
                 }
                 this.updateModifierEfficiency(consumer.id, Math.min(1, consumer.efficiency * efficiency));
@@ -666,6 +667,7 @@ class ResourceCalculators {
                     // We should get here next target, but for now use this dirty hack
                     targetEff = 1.; // Math.min(1, Math.max(consumer.efficiency, 100*SMALL_NUMBER)*4);
                     if(consumer.bottleNeck === resourceId) {
+                        console.warn('Resetting consuming efficiency for ', consumer.id, targetEff, bottleNeck);
                         this.updateModifierEfficiency(consumer.id,targetEff);
                     }
                 }
