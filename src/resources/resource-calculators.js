@@ -667,7 +667,9 @@ class ResourceCalculators {
                     // We should get here next target, but for now use this dirty hack
                     targetEff = 1.; // Math.min(1, Math.max(consumer.efficiency, 100*SMALL_NUMBER)*4);
                     if(consumer.bottleNeck === resourceId) {
-                        console.warn('Resetting consuming efficiency for ', consumer.id, targetEff, bottleNeck);
+                        if(resourceId === 'inventory_herbalists_elixir') {
+                            console.warn('Resetting consuming efficiency for ', consumer.id, targetEff, consumer.bottleNeck, gameResources.getResource(resourceId).targetEfficiency);
+                        }
                         this.updateModifierEfficiency(consumer.id,targetEff);
                     }
                 }
