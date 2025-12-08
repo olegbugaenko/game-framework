@@ -20,6 +20,10 @@ resourceApi.setResourcesAlgo = (mode) => {
 const calcTargetEfficiency = (res) => {
     const currentTarget = res.targetEfficiency ?? 1;
     const effectiveIncome = res.multiplier * res.income;
+
+    if(res.id === 'inventory_herbalists_elixir') {
+        console.log('exceedFactor: ', res.id, exceedFactor, effectiveIncome, res.consumption, currentTarget);
+    }
     
     // If balance is positive and targetEfficiency < 1, gradually increase
     if (res.balance > SMALL_NUMBER && currentTarget < 1) {
@@ -27,9 +31,7 @@ const calcTargetEfficiency = (res) => {
         const exceedFactor = res.consumption > SMALL_NUMBER 
             ? effectiveIncome / res.consumption 
             : 1;
-        if(res.id === 'inventory_herbalists_elixir') {
-            console.log('exceedFactor: ', res.id, exceedFactor, effectiveIncome, res.consumption, currentTarget);
-        }
+
         return Math.min(1, currentTarget * Math.max(1, exceedFactor));
     }
     
