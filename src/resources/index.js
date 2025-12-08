@@ -22,7 +22,7 @@ const calcTargetEfficiency = (res) => {
     const effectiveIncome = res.multiplier * res.income;
 
     if(res.id === 'inventory_herbalists_elixir') {
-        console.log('exceedFactor: ', res.id, exceedFactor, effectiveIncome, res.consumption, currentTarget);
+        console.log('exceedFactor: ', res.id, res.balance, effectiveIncome, res.consumption, currentTarget);
     }
     
     // If balance is positive and targetEfficiency < 1, gradually increase
