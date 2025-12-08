@@ -15,14 +15,31 @@ resourceApi.setResourcesAlgo = (mode) => {
     return activeAlgo;
 };
 
-// Helper to calculate targetEfficiency from baseConsumption
-// Returns 0 if income is 0 (no production means no consumption allowed)
+// Helper to calculate targetEfficiency
+// Uses iterative approach: decrease when balance < 0, increase gradually when balance > 0
 const calcTargetEfficiency = (res) => {
-    const baseCons = res.baseConsumption || res.consumption;
-    if (baseCons <= SMALL_NUMBER) return 1;
+    const currentTarget = res.targetEfficiency ?? 1;
     const effectiveIncome = res.multiplier * res.income;
-    if (effectiveIncome <= SMALL_NUMBER) return 0; // No income = no efficiency
-    return Math.min(1, effectiveIncome / baseCons);
+    
+    // If balance is positive and targetEfficiency < 1, gradually increase
+    if (res.balance > SMALL_NUMBER && currentTarget < 1) {
+        // Calculate how much we can increase based on excess income
+        const exceedFactor = res.consumption > SMALL_NUMBER 
+            ? effectiveIncome / res.consumption 
+            : 1;
+        return Math.min(1, currentTarget * Math.max(1, exceedFactor));
+    }
+    
+    // If balance is negative, calculate from baseConsumption
+    if (res.balance < -SMALL_NUMBER) {
+        const baseCons = res.baseConsumption || res.consumption;
+        if (baseCons <= SMALL_NUMBER) return 1;
+        if (effectiveIncome <= SMALL_NUMBER) return 0; // No income = no efficiency
+        return Math.min(1, effectiveIncome / baseCons);
+    }
+    
+    // Balance is ~0, keep current targetEfficiency
+    return currentTarget;
 };
 
 class ResourcesManager {
