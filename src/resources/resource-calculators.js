@@ -259,10 +259,13 @@ class ResourceCalculators {
                     : (rmod.consumption?.resources?.[id]?.ignoreEfficiency ? 1 :  getRelevantEfficiency(rmod.efficiency));
                 const intMult = isConstEff ? 1 : intensityMultiplier;
                 
-                // baseConsumption = consumption at 100% efficiency (ALWAYS add, regardless of current efficiency)
-                // This is needed for calculating targetEfficiency correctly
+                // baseConsumption = "potential consumption" if THIS resource wasn't a bottleneck
+                // If consumer has bottleneck from OTHER resource, it can't consume more than that allows
+                // So we use its current efficiency, not 100%
                 if(amt > SMALL_NUMBER) {
-                    baseConsumption += amt * intMult;
+                    const hasOtherBottleneck = rmod.bottleNeck && rmod.bottleNeck !== id;
+                    const potentialEfficiency = hasOtherBottleneck ? rmod.efficiency : 1;
+                    baseConsumption += amt * intMult * potentialEfficiency;
                 }
                 
                 // Skip actual consumption if efficiency is 0
