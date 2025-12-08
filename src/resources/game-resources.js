@@ -33,6 +33,9 @@ class GameResources {
         if(!this.resources[id].targetEfficiency) {
             this.resources[id].targetEfficiency = 1;
         }
+        if(!this.resources[id].baseConsumption) {
+            this.resources[id].baseConsumption = 0;
+        }
         if(resource.tags) {
             resource.tags.forEach(tag => {
                 if(!this.resourcesByTags[tag]) {
@@ -211,6 +214,11 @@ class GameResources {
         const rs = this.getResource(id);
         rs.consumption = consumption;
         this.assertBalance(id);
+    }
+
+    setResourceBaseConsumption(id, baseConsumption) {
+        const rs = this.getResource(id);
+        rs.baseConsumption = baseConsumption;
     }
 
     setResourceMultiplier(id, multiplier) {

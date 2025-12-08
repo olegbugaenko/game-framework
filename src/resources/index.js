@@ -93,16 +93,16 @@ class ResourcesManager {
                     if(gameResources.resources[resourceId].isService && gameResources.resources[resourceId].balance < -SMALL_NUMBER) {
                         // we are missing service resource
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                            const ratio = gameResources.resources[resourceId].consumption
-                                ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
-                                : 0;
-                            // Clamp efficiency ratio so that missing resources never collapse dependants to 0%
-                            const effPercentage = Math.max(SMALL_NUMBER, ratio);
-                            const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
+                            // Use baseConsumption (consumption at 100% efficiency) for calculating targetEfficiency
+                            const baseCons = gameResources.resources[resourceId].baseConsumption || gameResources.resources[resourceId].consumption;
+                            const newTargetEff = baseCons > SMALL_NUMBER
+                                ? Math.min(1, Math.max(SMALL_NUMBER, gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / baseCons))
+                                : 1;
+                            const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, newTargetEff, true);
                             (togg.affectedResourceIds || []).forEach(addDirty);
                             gameResources.resources[resourceId].isMissing = true;
                             gameResources.resources[resourceId].amount = 0;
-                            gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                            gameResources.resources[resourceId].targetEfficiency = newTargetEff;
                             isAssertsFinished = false;
                         } else {
                             gameResources.resources[resourceId].isMissing = false;
@@ -116,15 +116,17 @@ class ResourcesManager {
                         if (!gameResources.resources[resourceId].isConstantEfficiency) {
                             const doPropagate = activeAlgo === 'optimized' ? hasFlow(gameResources.resources[resourceId]) : true;
                             if(doPropagate) {
-                                const effPercentage = gameResources.resources[resourceId].consumption
-                                    ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
-                                    : 0;
-                                // console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, effPercentage);
-                                const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, effPercentage, true);
+                                // Use baseConsumption (consumption at 100% efficiency) for calculating targetEfficiency
+                                const baseCons = gameResources.resources[resourceId].baseConsumption || gameResources.resources[resourceId].consumption;
+                                const newTargetEff = baseCons > SMALL_NUMBER
+                                    ? Math.min(1, Math.max(SMALL_NUMBER, gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / baseCons))
+                                    : 1;
+                                // console.log('resource is finishing: ', resourceId, gameResources.resources[resourceId].balance, newTargetEff);
+                                const togg = resourceCalculators.toggleConsumingEfficiency(resourceId, newTargetEff, true);
                                 (togg.affectedResourceIds || []).forEach(addDirty);
                                 gameResources.resources[resourceId].isMissing = true;
                                 gameResources.resources[resourceId].amount = 0;
-                                gameResources.resources[resourceId].targetEfficiency = effPercentage * gameResources.resources[resourceId].targetEfficiency;
+                                gameResources.resources[resourceId].targetEfficiency = newTargetEff;
                             }
                         } else {
                             gameResources.resources[resourceId].isMissing = false;
@@ -134,28 +136,16 @@ class ResourcesManager {
                         isAssertsFinished = false;
                     } else {
                         if (gameResources.resources[resourceId].isMissing && gameResources.resources[resourceId].balance > SMALL_NUMBER) {
-                            // console.log('Toggling '+resourceId);
-                            // ми тугланули на 100% ресурс котрий ми начебто міссили. (crafting_ability)
-                            // але цей тугл тягне за собою необхідність апдейту тих resourceModifiers, у яких ботлнек - цей ресурс
-                            // Ми апдейтимо ефективність крафту паперу на 1, але у магічного паперу ботлнек - папір, якого ми не чіпаємо
-                            // Тому, нам потрібно також перевіряти список ресурсів, у яких баланс > 0 і ми їх місаємо.
-                            // Для таких ресурсів вартувало б ресетити ефективність
-                            // Якщо ми ресетнемо ефективність паперу, позаяк його баланс є > 0, і він міссінг - це призведе
-                            // до того, що баланс паперу знову стане негативним, і ми будемо змушені його перерахувати.
-                            // Для того нам потрібно баланс паперу додавати в масив
-                            // Як знати що саме його додати - це ресурс, який генерується чи мультиплікується ентітьою,
-                            // котрій ми шомно ресетнули
-                            // Тобто, якщо ми ресетнули ефективність по ресурсу crafting_ability - перевіряємо усе що генерилося
-                            // тим що консюмить resourceId, і докидуємо ссууудааа
+                            // Resource was missing but now has positive balance - recalculate efficiency
                             if (!gameResources.resources[resourceId].isConstantEfficiency) {
-                                const prEff = gameResources.resources[resourceId].targetEfficiency;
-                                const exceedFactor = gameResources.resources[resourceId].consumption
-                                    ? gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / gameResources.resources[resourceId].consumption
-                                    : 1./Math.max(SMALL_NUMBER, prEff);
-                                const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, exceedFactor, true);
-                                gameResources.resources[resourceId].targetEfficiency = prEff * exceedFactor;
-                                gameResources.resources[resourceId].isMissing = gameResources.resources[resourceId].targetEfficiency < 1;
-                                const prUp = [...newResourcesToUpdate];
+                                // Use baseConsumption for direct targetEfficiency calculation
+                                const baseCons = gameResources.resources[resourceId].baseConsumption || gameResources.resources[resourceId].consumption;
+                                const newTargetEff = baseCons > SMALL_NUMBER
+                                    ? Math.min(1, Math.max(SMALL_NUMBER, gameResources.resources[resourceId].multiplier * gameResources.resources[resourceId].income / baseCons))
+                                    : 1;
+                                const affected = resourceCalculators.toggleConsumingEfficiency(resourceId, newTargetEff, true);
+                                gameResources.resources[resourceId].targetEfficiency = newTargetEff;
+                                gameResources.resources[resourceId].isMissing = newTargetEff < 1;
                                 addDirty(resourceId);
                                 if(affected.affectedResources) {
                                     (affected.affectedResources || []).forEach(addDirty);
@@ -164,7 +154,7 @@ class ResourcesManager {
                                 gameResources.resources[resourceId].isMissing = false;
                                 gameResources.resources[resourceId].targetEfficiency = 1;
                             }
-                            // console.log(`Iter${iter}: Toggling `+resourceId, prEff, 1./(SMALL_NUMBER + prEff), exceedFactor, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
+                            // console.log(`Iter${iter}: Toggling `+resourceId, newTargetEff, JSON.parse(JSON.stringify(newResourcesToUpdate)), gameResources.listMissing(), JSON.parse(JSON.stringify(gameResources.resources[resourceId])));
                             isAssertsFinished = false;
                         }
                     }
