@@ -656,8 +656,17 @@ class ResourceCalculators {
                 }
                 
                 if (efficiency < 1) {
-                    // Resource is a bottleneck - store its targetEfficiency
-                    consumer.bottlenecks[resourceId] = efficiency;
+                    // Calculate this consumer's potential efficiency from OTHER bottlenecks
+                    const otherBottleneckEffs = Object.entries(consumer.bottlenecks)
+                        .filter(([resId]) => resId !== resourceId)
+                        .map(([, eff]) => eff);
+                    const potentialEfficiency = otherBottleneckEffs.length > 0 
+                        ? Math.min(1, ...otherBottleneckEffs) 
+                        : 1;
+                    
+                    // Store adjusted efficiency: targetEff * potentialEff
+                    // This ensures base_consumption * final_eff = potential_consumption * targetEff
+                    consumer.bottlenecks[resourceId] = efficiency * potentialEfficiency;
                     consumer.bottleNeck = resourceId;
                 } else {
                     // Resource is no longer a bottleneck - remove it
