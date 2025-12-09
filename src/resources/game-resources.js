@@ -137,10 +137,10 @@ class GameResources {
         if(amount < 0) {
             rs.spent -= amount;
         }
+        rs.amount += amtToAdd;
         if(rs.amount < 0) {
             rs.amount = 0;
         }
-        rs.amount += amtToAdd;
         if(rs.modifier && amtToAdd !== 0) {
             rs.modifier.level = rs.amount;
             resourceCalculators.regenerateModifier(rs.modifier.id);

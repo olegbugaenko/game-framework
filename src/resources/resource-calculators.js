@@ -260,11 +260,17 @@ class ResourceCalculators {
                 const intMult = isConstEff ? 1 : intensityMultiplier;
                 
                 // baseConsumption = "potential consumption" if THIS resource wasn't a bottleneck
-                // If consumer has bottleneck from OTHER resource, it can't consume more than that allows
-                // So we use its current efficiency, not 100%
+                // Calculate efficiency from OTHER bottlenecks only (excluding this resource)
                 if(amt > SMALL_NUMBER) {
-                    const hasOtherBottleneck = rmod.bottleNeck && rmod.bottleNeck !== id;
-                    const potentialEfficiency = hasOtherBottleneck ? rmod.efficiency : 1;
+                    let potentialEfficiency = 1;
+                    if (rmod.bottlenecks) {
+                        const otherBottleneckEffs = Object.entries(rmod.bottlenecks)
+                            .filter(([resId]) => resId !== id)
+                            .map(([, eff]) => eff);
+                        if (otherBottleneckEffs.length > 0) {
+                            potentialEfficiency = Math.min(1, ...otherBottleneckEffs);
+                        }
+                    }
                     baseConsumption += amt * intMult * potentialEfficiency;
                 }
                 
