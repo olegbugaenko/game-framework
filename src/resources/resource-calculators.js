@@ -635,6 +635,7 @@ class ResourceCalculators {
 
         let affectedResourceIds = [];
         let resourcesToReassert = new Set();
+        let effectsToReassert = new Set();
 
         if(consuming && consuming.length) {
             // First pass: update all consumer efficiencies without triggering reasserts
@@ -688,9 +689,10 @@ class ResourceCalculators {
                 // Update efficiency directly without triggering cascading reasserts
                 resourceModifiers.setEfficiency(consumer.id, newEfficiency);
                 
-                // Collect resources to reassert later
+                // Collect resources and effects to reassert later
                 const deps = resourceModifiers.getDependenciesToRegenerate(consumer.id);
                 deps.resources.forEach(rs => resourcesToReassert.add(rs));
+                deps.effects.forEach(effId => effectsToReassert.add(effId));
                 
                 // Update bottleNeck to the most restrictive one
                 if (bottleneckValues.length > 0) {
@@ -708,6 +710,9 @@ class ResourceCalculators {
             
             // Second pass: reassert all affected resources AFTER all efficiencies are updated
             resourcesToReassert.forEach(rs => this.assertResource(rs));
+            
+            // Third pass: reassert all affected effects AFTER all efficiencies are updated
+            effectsToReassert.forEach(effId => this.assertEffect(effId));
         }
 
         return {
@@ -719,6 +724,7 @@ class ResourceCalculators {
     resetConsumingEfficiency(resourceId, bCheckBottleneck = false) {
         const consuming = resourceModifiers.modifiersGroupped.byResource[resourceId]?.consumption;
         let resourcesToReassert = new Set();
+        let effectsToReassert = new Set();
         
         if(consuming && consuming.length) {
             // First pass: update all consumer efficiencies
@@ -784,12 +790,17 @@ class ResourceCalculators {
                     }
                 }
 
-                // Collect resources to reassert
-                resourceModifiers.getDependenciesToRegenerate(consumer.id).resources.forEach(rs => resourcesToReassert.add(rs));
+                // Collect resources and effects to reassert
+                const deps = resourceModifiers.getDependenciesToRegenerate(consumer.id);
+                deps.resources.forEach(rs => resourcesToReassert.add(rs));
+                deps.effects.forEach(effId => effectsToReassert.add(effId));
             })
             
             // Second pass: reassert all affected resources
             resourcesToReassert.forEach(rs => this.assertResource(rs));
+            
+            // Third pass: reassert all affected effects
+            effectsToReassert.forEach(effId => this.assertEffect(effId));
         }
         gameResources.getResource(resourceId).isMissing = false;
         gameResources.getResource(resourceId).targetEfficiency = 1;
